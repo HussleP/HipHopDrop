@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   logoAccent: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
   },
   bellBtn: {
     padding: 4,
@@ -230,8 +230,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   chipActive: {
-    backgroundColor: colors.accentGold,
-    borderColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
+    borderColor: colors.accentTeal,
   },
   chipText: {
     color: colors.textMuted,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   breakingBadge: {
-    backgroundColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 4,
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   categoryPillText: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
     fontSize: 10,
     fontWeight: '500',
     textTransform: 'uppercase',

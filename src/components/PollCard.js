@@ -96,7 +96,7 @@ export default function PollCard({ poll }) {
   const totalVotes = Object.values(localVotes).reduce((a, b) => a + b, 0);
   const isTwoOption = options.length === 2;
 
-  const optionColors = ['#EF9F27', '#a855f7', '#14b8a6', '#f87171'];
+  const optionColors = ['#00C4B4', '#a855f7', '#14b8a6', '#f87171'];
 
   return (
     <View style={styles.card}>
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   awardsBadge: { backgroundColor: '#1a1a0e' },
   versusBadge: { backgroundColor: '#0e1a2a' },
   typeBadgeText: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
     fontSize: 10,
     fontWeight: '500',
     letterSpacing: 0.5,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   votedBorder: {
-    borderColor: colors.accentGold,
+    borderColor: colors.accentTeal,
   },
   optionLabel: {
     color: colors.textPrimary,
@@ -320,11 +320,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     borderLeftWidth: 3,
-    borderLeftColor: colors.accentGold,
+    borderLeftColor: colors.accentTeal,
   },
   votedBorderLeft: {
     borderWidth: 1,
-    borderColor: colors.accentGold,
+    borderColor: colors.accentTeal,
   },
   multiOptionRow: {
     flexDirection: 'row',

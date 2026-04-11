@@ -40,7 +40,7 @@ export default function SearchScreen() {
             value={query}
             onChangeText={setQuery}
             returnKeyType="search"
-            selectionColor={colors.accentGold}
+            selectionColor={colors.accentTeal}
           />
           {query.length > 0 && (
             <TouchableOpacity onPress={() => setQuery('')}>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   trendingRank: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
     fontSize: 16,
     fontWeight: '500',
     width: 20,

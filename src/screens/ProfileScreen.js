@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,

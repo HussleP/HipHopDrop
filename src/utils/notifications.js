@@ -15,7 +15,7 @@ export async function requestNotificationPermissions() {
       name: 'Merch Drops',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#EF9F27',
+      lightColor: '#00C4B4',
     });
   }
 
@@ -36,7 +36,7 @@ export async function scheduleDropNotification(artist, itemName) {
       title: `${artist} — ${itemName} is live`,
       body: 'Limited run. Tap to shop before it sells out.',
       sound: true,
-      color: '#EF9F27',
+      color: '#00C4B4',
     },
     trigger: null, // immediate
   });
@@ -48,7 +48,7 @@ export async function scheduleDelayedDropNotification(artist, itemName, delaySec
       title: `${artist} — ${itemName} is live`,
       body: 'Limited run. Tap to shop before it sells out.',
       sound: true,
-      color: '#EF9F27',
+      color: '#00C4B4',
     },
     trigger: { seconds: delaySeconds },
   });

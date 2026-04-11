@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   },
   categoryTag: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   },
   readFullBtn: {
     flex: 1,
-    backgroundColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',

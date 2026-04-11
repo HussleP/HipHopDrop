@@ -46,7 +46,7 @@ const CATEGORIES = [
     label: 'Limited Box Sets',
     description: 'Collector bundles & exclusives',
     emoji: '📦',
-    color: colors.accentGold,
+    color: colors.accentTeal,
   },
 ];
 
@@ -130,8 +130,8 @@ export default function DropAlertsScreen({ navigation }) {
               <Switch
                 value={!!categoryToggles[cat.id]}
                 onValueChange={() => toggleCategory(cat.id)}
-                trackColor={{ false: colors.border, true: colors.accentGold + '66' }}
-                thumbColor={categoryToggles[cat.id] ? colors.accentGold : '#555'}
+                trackColor={{ false: colors.border, true: colors.accentTeal + '66' }}
+                thumbColor={categoryToggles[cat.id] ? colors.accentTeal : '#555'}
               />
             </View>
           ))}
@@ -286,8 +286,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   artistPillActive: {
-    backgroundColor: colors.accentGold,
-    borderColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
+    borderColor: colors.accentTeal,
   },
   artistPillText: {
     color: colors.textMuted,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   previewApp: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
     fontSize: 12,
     fontWeight: '500',
   },

@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   soonOverlay: {
-    backgroundColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 5,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   price: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
     fontSize: 20,
     fontWeight: '500',
     marginBottom: 20,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   shopBtn: {
     flex: 1,
-    backgroundColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',

@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   headerAccent: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
   },
   filterBtn: {
     padding: 4,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.accentGold,
+    borderColor: colors.accentTeal,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   countdownTime: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
     fontSize: 26,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   soonBadge: {
-    backgroundColor: colors.accentGold,
+    backgroundColor: colors.accentTeal,
     borderRadius: 20,
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   dropPrice: {
-    color: colors.accentGold,
+    color: colors.accentTeal,
     fontSize: 13,
     fontWeight: '500',
     marginTop: 4,

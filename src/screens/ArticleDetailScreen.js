@@ -8,8 +8,10 @@ import {
   StatusBar,
   Share,
   Linking,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
 import { isArticleSaved, saveArticle, unsaveArticle } from '../services/savedArticlesService';
 
@@ -33,6 +35,7 @@ export default function ArticleDetailScreen({ route, navigation }) {
   }
 
   async function handleSave() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (saved) {
       await unsaveArticle(article.id);
       setSaved(false);
@@ -53,9 +56,23 @@ export default function ArticleDetailScreen({ route, navigation }) {
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Cover image with back arrow */}
-        <View style={[styles.coverImage, { backgroundColor: article.imageColor || '#1a1a1a' }]}>
+        <View style={styles.coverWrapper}>
+          {article.imageUrl ? (
+            <Image
+              source={{ uri: article.imageUrl }}
+              style={styles.coverImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={[styles.coverImage, { backgroundColor: article.imageColor || '#1a1a1a' }]} />
+          )}
+          {/* Scrim for readability */}
+          <View style={styles.coverScrim} />
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              navigation.goBack();
+            }}
             style={styles.backBtn}
             activeOpacity={0.7}
           >
@@ -115,16 +132,32 @@ export default function ArticleDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   scroll: { flex: 1 },
+  coverWrapper: {
+    height: 270,
+    position: 'relative',
+  },
   coverImage: {
-    height: 260,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    padding: 16,
+    height: 270,
+    width: '100%',
+  },
+  coverScrim: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 100,
+    backgroundColor: 'rgba(0,0,0,0.35)',
   },
   backBtn: {
-    width: 38, height: 38, borderRadius: 19,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    justifyContent: 'center', alignItems: 'center',
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   backArrow: { color: colors.textPrimary, fontSize: 20, lineHeight: 22 },
   content: { padding: 20, paddingBottom: 40 },

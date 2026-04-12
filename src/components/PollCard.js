@@ -7,6 +7,7 @@ import {
   Animated,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
 
 function getPercent(votes, total) {
@@ -78,6 +79,7 @@ export default function PollCard({ poll }) {
 
   async function handleVote(option) {
     if (voted) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const updated = buildVotes(option);
     const total = Object.values(updated).reduce((a, b) => a + b, 0);
     setVoted(option);

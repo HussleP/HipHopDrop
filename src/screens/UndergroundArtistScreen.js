@@ -8,6 +8,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
 
 export default function UndergroundArtistScreen({ route, navigation }) {
@@ -20,7 +21,7 @@ export default function UndergroundArtistScreen({ route, navigation }) {
 
         {/* Hero */}
         <View style={[styles.hero, { backgroundColor: artist.colorBg }]}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); navigation.goBack(); }} style={styles.backBtn}>
             <Text style={styles.backArrow}>←</Text>
           </TouchableOpacity>
           <View style={styles.heroContent}>
@@ -120,6 +121,7 @@ export default function UndergroundArtistScreen({ route, navigation }) {
           <TouchableOpacity
             style={[styles.supportBtn, { backgroundColor: artist.accentColor }]}
             activeOpacity={0.85}
+            onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
           >
             <Text style={styles.supportBtnText}>🎵  Listen Now</Text>
           </TouchableOpacity>

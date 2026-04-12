@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,14 +6,17 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
-  ActivityIndicator,
   RefreshControl,
+  Image,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
 import { polls, undergroundArtists } from '../data/mockData';
 import { fetchArticles } from '../services/newsService';
 import PollCard from '../components/PollCard';
+import { HomeFeedSkeleton } from '../components/SkeletonLoader';
 
 const FILTERS = ['All', 'Drops', 'Tours', 'Beef', 'Awards', 'Versus', 'Underground'];
 
@@ -28,9 +31,13 @@ function Logo() {
 }
 
 function CategoryChip({ label, active, onPress }) {
+  function handlePress() {
+    Haptics.selectionAsync();
+    onPress();
+  }
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={handlePress}
       style={[styles.chip, active && styles.chipActive]}
       activeOpacity={0.7}
     >
@@ -42,12 +49,27 @@ function CategoryChip({ label, active, onPress }) {
 }
 
 function HeroCard({ article, onPress }) {
+  function handlePress() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress();
+  }
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={styles.heroCard}>
-      <View style={[styles.heroImage, { backgroundColor: article.imageColor }]}>
-        <View style={styles.breakingBadge}>
-          <Text style={styles.breakingText}>Breaking</Text>
-        </View>
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.85} style={styles.heroCard}>
+      {article.imageUrl ? (
+        <Image
+          source={{ uri: article.imageUrl }}
+          style={styles.heroImage}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={[styles.heroImage, { backgroundColor: article.imageColor }]} />
+      )}
+      <View style={styles.heroImageOverlay}>
+        {article.isBreaking && (
+          <View style={styles.breakingBadge}>
+            <Text style={styles.breakingText}>Breaking</Text>
+          </View>
+        )}
       </View>
       <View style={styles.heroContent}>
         <Text style={styles.heroTitle} numberOfLines={2}>{article.title}</Text>
@@ -58,9 +80,21 @@ function HeroCard({ article, onPress }) {
 }
 
 function ArticleRow({ article, onPress }) {
+  function handlePress() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress();
+  }
   return (
-    <TouchableOpacity onPress={onPress} style={styles.articleRow} activeOpacity={0.7}>
-      <View style={[styles.articleThumb, { backgroundColor: article.imageColor }]} />
+    <TouchableOpacity onPress={handlePress} style={styles.articleRow} activeOpacity={0.7}>
+      {article.imageUrl ? (
+        <Image
+          source={{ uri: article.imageUrl }}
+          style={styles.articleThumb}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={[styles.articleThumb, { backgroundColor: article.imageColor }]} />
+      )}
       <View style={styles.articleInfo}>
         <View style={styles.categoryPill}>
           <Text style={styles.categoryPillText}>{article.category}</Text>
@@ -101,6 +135,7 @@ export default function HomeScreen({ navigation }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     loadArticles();
@@ -111,6 +146,12 @@ export default function HomeScreen({ navigation }) {
     const data = await fetchArticles();
     setArticles(data);
     setLoading(false);
+    // Fade in content smoothly once loaded
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
   }
 
   async function onRefresh() {
@@ -152,13 +193,11 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.accentTeal} />
-          <Text style={styles.loadingText}>Loading latest news...</Text>
-        </View>
-      )}
+      {/* Skeleton loading state */}
+      {loading && <HomeFeedSkeleton />}
 
+      {!loading && (
+      <Animated.View style={[{ flex: 1 }, { opacity: fadeAnim }]}>
       <ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -261,6 +300,8 @@ export default function HomeScreen({ navigation }) {
           </View>
         )}
       </ScrollView>
+      </Animated.View>
+      )}
     </SafeAreaView>
   );
 }
@@ -342,10 +383,21 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   heroImage: {
-    height: 200,
+    height: 210,
+    width: '100%',
+    backgroundColor: '#1a1a1a',
+  },
+  heroImageOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 210,
+    padding: 12,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    padding: 12,
+    // subtle gradient-like fade at bottom
+    backgroundColor: 'transparent',
   },
   breakingBadge: {
     backgroundColor: colors.accentTeal,
@@ -437,18 +489,6 @@ const styles = StyleSheet.create({
   articleMeta: {
     color: colors.textMuted,
     fontSize: 11,
-    fontWeight: '400',
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 80,
-    gap: 12,
-  },
-  loadingText: {
-    color: colors.textMuted,
-    fontSize: 14,
     fontWeight: '400',
   },
   emptyState: {

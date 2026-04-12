@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Share,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
@@ -86,6 +87,42 @@ export default function PollCard({ poll }) {
     setLocalVotes(updated);
     animateBars(updated, total);
     await AsyncStorage.setItem(storageKey, option);
+  }
+
+  async function handleShare() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    const options = [
+      poll.optionA,
+      poll.optionB,
+      poll.optionC,
+      poll.optionD,
+    ].filter(Boolean);
+
+    const total = Object.values(localVotes).reduce((a, b) => a + b, 0);
+
+    let message = `🎤 Hip-Hop Drop Poll\n\n"${poll.question}"\n${poll.subtitle}\n\n`;
+
+    if (voted && total > 0) {
+      options.forEach((opt, i) => {
+        const key = ['A', 'B', 'C', 'D'][i];
+        const pct = getPercent(localVotes[key] || 0, total);
+        const bar = '█'.repeat(Math.round(pct / 10)) + '░'.repeat(10 - Math.round(pct / 10));
+        message += `${opt.label}\n${bar} ${pct}%\n\n`;
+      });
+      message += `${total.toLocaleString()} votes cast\n\n`;
+    } else {
+      options.forEach(opt => {
+        message += `• ${opt.label}\n`;
+      });
+      message += '\nCast your vote on Hip-Hop Drop 🔥';
+    }
+
+    try {
+      await Share.share({ message });
+    } catch (err) {
+      console.warn('Share error:', err);
+    }
   }
 
   const options = [
@@ -202,9 +239,17 @@ export default function PollCard({ poll }) {
         </View>
       )}
 
-      {!voted && (
-        <Text style={styles.votePrompt}>Cast your vote</Text>
-      )}
+      {/* Footer row */}
+      <View style={styles.footer}>
+        {!voted
+          ? <Text style={styles.votePrompt}>Cast your vote</Text>
+          : <Text style={styles.votePrompt}>{Object.values(localVotes).reduce((a, b) => a + b, 0).toLocaleString()} votes</Text>
+        }
+        <TouchableOpacity onPress={handleShare} style={styles.shareBtn} activeOpacity={0.7}>
+          <Text style={styles.shareIcon}>↑</Text>
+          <Text style={styles.shareLabel}>Share</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -359,11 +404,42 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
   },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
   votePrompt: {
     color: colors.textMuted,
     fontSize: 11,
     fontWeight: '400',
-    textAlign: 'center',
-    marginTop: 12,
+    letterSpacing: 0.3,
+  },
+  shareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+  },
+  shareIcon: {
+    color: colors.accentTeal,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  shareLabel: {
+    color: colors.accentTeal,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
 });

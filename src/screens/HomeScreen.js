@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
-import { polls, undergroundArtists, posthumousAlbums } from '../data/mockData';
+import { polls, undergroundArtists, posthumousAlbums, musicVideos } from '../data/mockData';
 import { fetchArticles } from '../services/newsService';
 import PollCard from '../components/PollCard';
 import { HomeFeedSkeleton } from '../components/SkeletonLoader';
@@ -148,6 +148,32 @@ function LegacyVaultCard({ album, onPress }) {
       <Text style={styles.legacyAlbumTitle} numberOfLines={2}>{album.albumTitle}</Text>
       <Text style={[styles.legacyArtistName, { color: album.accentColor }]}>{album.artist}</Text>
       <Text style={styles.legacyTagline} numberOfLines={2}>{album.tagline}</Text>
+    </TouchableOpacity>
+  );
+}
+
+function VideoSpotlightCard({ video, onPress }) {
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={styles.videoCard}>
+      <Image
+        source={{ uri: `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg` }}
+        style={styles.videoThumb}
+        resizeMode="cover"
+      />
+      <View style={styles.videoScrim} />
+      {/* Play button */}
+      <View style={styles.videoPlayBtn}>
+        <Text style={styles.videoPlayIcon}>▶</Text>
+      </View>
+      {/* Duration */}
+      <View style={styles.videoDuration}>
+        <Text style={styles.videoDurationText}>{video.duration}</Text>
+      </View>
+      {/* Info overlay at bottom */}
+      <View style={styles.videoInfo}>
+        <Text style={styles.videoTitle} numberOfLines={1}>{video.title}</Text>
+        <Text style={[styles.videoArtist, { color: video.accentColor }]}>{video.artist}</Text>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -323,6 +349,37 @@ export default function HomeScreen({ navigation }) {
                   key={album.id}
                   album={album}
                   onPress={() => navigation.navigate('PosthumousDetail', { album })}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Video Spotlight — shown on All filter only */}
+        {activeFilter === 'All' && (
+          <View style={styles.videoSection}>
+            <View style={styles.ugSectionHeader}>
+              <Text style={styles.sectionTitle}>🎬 Music Videos</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Videos')}>
+                <Text style={styles.seeAll}>See all</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.videoScroll}
+            >
+              {musicVideos.slice(0, 6).map(video => (
+                <VideoSpotlightCard
+                  key={video.id}
+                  video={video}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    navigation.navigate('Videos', {
+                      screen: 'VideoPlayer',
+                      params: { video },
+                    });
+                  }}
                 />
               ))}
             </ScrollView>
@@ -631,6 +688,74 @@ const styles = StyleSheet.create({
     color: colors.accentTeal,
     fontSize: 13,
     fontWeight: '500',
+  },
+
+  // Video spotlight
+  videoSection: {
+    marginTop: 20,
+  },
+  videoScroll: {
+    paddingHorizontal: 16,
+    gap: 10,
+    paddingBottom: 4,
+  },
+  videoCard: {
+    width: 190,
+    height: 190 * (9 / 16),
+    borderRadius: 3,
+    overflow: 'hidden',
+    backgroundColor: colors.surface,
+  },
+  videoThumb: {
+    width: '100%',
+    height: '100%',
+  },
+  videoScrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  videoPlayBtn: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoPlayIcon: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 22,
+  },
+  videoDuration: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  videoDurationText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '600',
+  },
+  videoInfo: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 8,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+  videoTitle: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  videoArtist: {
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginTop: 2,
   },
 
   // Legacy Vault

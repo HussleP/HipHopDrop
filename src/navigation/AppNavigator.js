@@ -15,6 +15,8 @@ import DropAlertsScreen from '../screens/DropAlertsScreen';
 import SavedArticlesScreen from '../screens/SavedArticlesScreen';
 import UndergroundArtistScreen from '../screens/UndergroundArtistScreen';
 import PosthumousDetailScreen from '../screens/PosthumousDetailScreen';
+import VideosScreen from '../screens/VideosScreen';
+import VideoPlayerScreen from '../screens/VideoPlayerScreen';
 import { colors } from '../theme/colors';
 
 const Tab = createBottomTabNavigator();
@@ -50,6 +52,15 @@ function DropsStack() {
   );
 }
 
+function VideosStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="VideosFeed" component={VideosScreen} />
+      <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
+    </Stack.Navigator>
+  );
+}
+
 function ProfileStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -62,10 +73,11 @@ function ProfileStack() {
 
 function TabIcon({ name, focused }) {
   const icons = {
-    Home: focused ? '🏠' : '🏚',
+    Home:   focused ? '🏠' : '🏚',
     Search: '🔍',
-    Drops: '👟',
-    Profile: '👤',
+    Drops:  '👟',
+    Videos: '🎬',
+    Profile:'👤',
   };
   return (
     <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>
@@ -101,6 +113,7 @@ export default function AppNavigator() {
         <Tab.Screen name="Home" component={HomeStack} />
         <Tab.Screen name="Search" component={SearchStack} />
         <Tab.Screen name="Drops" component={DropsStack} />
+        <Tab.Screen name="Videos" component={VideosStack} />
         <Tab.Screen name="Profile" component={ProfileStack} />
       </Tab.Navigator>
     </NavigationContainer>

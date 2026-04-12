@@ -3,7 +3,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onAuthChange } from './src/services/authService';
-import { requestNotificationPermissions, scheduleDelayedDropNotification } from './src/utils/notifications';
+import { requestNotificationPermissions, scheduleDelayedDropNotification, registerPushToken } from './src/utils/notifications';
 import { demoNotificationDrop } from './src/data/mockData';
 import AppNavigator from './src/navigation/AppNavigator';
 import AuthScreen from './src/screens/AuthScreen';
@@ -15,7 +15,13 @@ export default function App() {
   const [onboardingDone, setOnboardingDone] = useState(undefined); // undefined = loading
 
   useEffect(() => {
-    const unsubscribe = onAuthChange((u) => setUser(u));
+    const unsubscribe = onAuthChange((u) => {
+      setUser(u);
+      // Register / refresh push token every time a user signs in
+      if (u) {
+        registerPushToken(u.uid);
+      }
+    });
     checkOnboarding();
     initNotifications();
     return unsubscribe;

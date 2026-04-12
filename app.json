@@ -2,31 +2,84 @@
   "expo": {
     "name": "Hip-Hop Drop",
     "slug": "hip-hop-drop",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+
+    "scheme": "hiphop-drop",
+
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0f0f0f"
+      "backgroundColor": "#0A0907"
     },
+
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "checkAutomatically": "ON_LOAD",
+      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
+    },
+
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+
     "assetBundlePatterns": [
       "**/*"
     ],
+
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.hiphop.drop"
-    },
-    "android": {
-      "package": "com.hiphop.drop",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f0f0f"
+      "bundleIdentifier": "com.hiphop.drop",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to capture photos for tips and sightings.",
+        "NSPhotoLibraryUsageDescription": "Used to attach images to tip submissions."
       }
     },
+
+    "android": {
+      "package": "com.hiphop.drop",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A0907"
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "hiphop-drop.app",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    },
+
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#E07B0A",
+          "sounds": []
+        }
+      ]
+    ]
   }
 }

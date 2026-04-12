@@ -13,6 +13,7 @@ import MerchDetailScreen from '../screens/MerchDetailScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import DropAlertsScreen from '../screens/DropAlertsScreen';
 import SavedArticlesScreen from '../screens/SavedArticlesScreen';
+import SubmitTipScreen from '../screens/SubmitTipScreen';
 import UndergroundArtistScreen from '../screens/UndergroundArtistScreen';
 import PosthumousDetailScreen from '../screens/PosthumousDetailScreen';
 import VideosScreen from '../screens/VideosScreen';
@@ -64,9 +65,10 @@ function VideosStack() {
 function ProfileStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="ProfileMain" component={ProfileScreen} />
-      <Stack.Screen name="DropAlerts" component={DropAlertsScreen} />
+      <Stack.Screen name="ProfileMain"   component={ProfileScreen}      />
+      <Stack.Screen name="DropAlerts"    component={DropAlertsScreen}   />
       <Stack.Screen name="SavedArticles" component={SavedArticlesScreen} />
+      <Stack.Screen name="SubmitTip"     component={SubmitTipScreen}    />
     </Stack.Navigator>
   );
 }
@@ -86,9 +88,52 @@ function TabIcon({ name, focused }) {
   );
 }
 
+const linking = {
+  prefixes: ['hiphop-drop://', 'https://hiphop-drop.app'],
+  config: {
+    screens: {
+      Home: {
+        screens: {
+          HomeFeed:         'home',
+          ArticleDetail:    'article/:id',
+          UndergroundArtist:'underground/:id',
+          PosthumousDetail: 'legacy/:id',
+        },
+      },
+      Search: {
+        screens: {
+          SearchMain:   'search',
+          ArtistProfile:'artist/:id',
+          ArticleDetail:'search/article/:id',
+        },
+      },
+      Drops: {
+        screens: {
+          DropsFeed:  'drops',
+          MerchDetail:'drops/merch/:id',
+        },
+      },
+      Videos: {
+        screens: {
+          VideosFeed: 'videos',
+          VideoPlayer:'videos/play/:id',
+        },
+      },
+      Profile: {
+        screens: {
+          ProfileMain:   'profile',
+          DropAlerts:    'profile/alerts',
+          SavedArticles: 'profile/saved',
+          SubmitTip:     'profile/submit-tip',
+        },
+      },
+    },
+  },
+};
+
 export default function AppNavigator() {
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,

@@ -16,11 +16,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 
 const MENU_ITEMS = [
-  { id: 'alerts', label: 'Drop Alerts', sub: 'Manage your notifications', emoji: '🔔', nav: 'DropAlerts' },
-  { id: 'saved', label: 'Saved Articles', sub: 'Your bookmarked articles', emoji: '♡', nav: 'SavedArticles' },
-  { id: 'followed', label: 'Followed Artists', sub: '7 artists', emoji: '⭐', nav: null },
-  { id: 'notifications', label: 'Notification Settings', sub: 'Push, email preferences', emoji: '⚙️', nav: null },
-  { id: 'about', label: 'About Hip-Hop Drop', sub: 'Version 1.0.0', emoji: 'ℹ️', nav: null },
+  { id: 'alerts',        label: 'Drop Alerts',           sub: 'Manage your notifications',   emoji: '🔔', nav: 'DropAlerts'   },
+  { id: 'saved',         label: 'Saved Articles',        sub: 'Your bookmarked articles',    emoji: '♡',  nav: 'SavedArticles' },
+  { id: 'tip',           label: 'Submit a Tip',          sub: 'Send us a story or sighting', emoji: '📬', nav: 'SubmitTip'    },
+  { id: 'followed',      label: 'Followed Artists',      sub: '7 artists',                   emoji: '⭐', nav: null           },
+  { id: 'notifications', label: 'Notification Settings', sub: 'Push, email preferences',     emoji: '⚙️', nav: null           },
+  { id: 'about',         label: 'About Hip-Hop Drop',    sub: 'Version 1.0.0',               emoji: 'ℹ️', nav: null           },
 ];
 
 export default function ProfileScreen({ navigation }) {

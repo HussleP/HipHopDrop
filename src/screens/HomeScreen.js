@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
-import { articles, polls } from '../data/mockData';
+import { polls } from '../data/mockData';
+import { fetchArticles } from '../services/newsService';
 import PollCard from '../components/PollCard';
 
 const FILTERS = ['All', 'Drops', 'Tours', 'Beef', 'Awards', 'Versus'];
@@ -71,6 +74,27 @@ function ArticleRow({ article, onPress }) {
 
 export default function HomeScreen({ navigation }) {
   const [activeFilter, setActiveFilter] = useState('All');
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
+
+  async function loadArticles() {
+    setLoading(true);
+    const data = await fetchArticles();
+    setArticles(data);
+    setLoading(false);
+  }
+
+  async function onRefresh() {
+    setRefreshing(true);
+    const data = await fetchArticles();
+    setArticles(data);
+    setRefreshing(false);
+  }
 
   const filteredArticles = activeFilter === 'All'
     ? articles
@@ -103,10 +127,24 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.accentTeal} />
+          <Text style={styles.loadingText}>Loading latest news...</Text>
+        </View>
+      )}
+
       <ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.accentTeal}
+          />
+        }
       >
         {/* Filter chips */}
         <ScrollView
@@ -344,6 +382,18 @@ const styles = StyleSheet.create({
   articleMeta: {
     color: colors.textMuted,
     fontSize: 11,
+    fontWeight: '400',
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 80,
+    gap: 12,
+  },
+  loadingText: {
+    color: colors.textMuted,
+    fontSize: 14,
     fontWeight: '400',
   },
   emptyState: {

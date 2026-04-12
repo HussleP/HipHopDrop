@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
+import { logOut, getCurrentUser } from '../services/authService';
 
 const MENU_ITEMS = [
   { id: 'alerts', label: 'Drop Alerts', sub: 'Manage your notifications', emoji: '🔔', nav: 'DropAlerts' },
@@ -19,6 +21,18 @@ const MENU_ITEMS = [
 ];
 
 export default function ProfileScreen({ navigation }) {
+  const user = getCurrentUser();
+
+  async function handleLogOut() {
+    Alert.alert('Log Out', 'Are you sure you want to log out?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Log Out', style: 'destructive', onPress: async () => await logOut() },
+    ]);
+  }
+
+  const displayName = user?.displayName || 'Hip-Hop Fan';
+  const email = user?.email || '';
+  const initial = displayName.charAt(0).toUpperCase();
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
@@ -30,10 +44,10 @@ export default function ProfileScreen({ navigation }) {
         {/* Avatar section */}
         <View style={styles.avatarSection}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>Z</Text>
+            <Text style={styles.avatarText}>{initial}</Text>
           </View>
-          <Text style={styles.displayName}>Zach</Text>
-          <Text style={styles.handle}>@zach · Hip-Hop Fan</Text>
+          <Text style={styles.displayName}>{displayName}</Text>
+          <Text style={styles.handle}>{email}</Text>
 
           <View style={styles.statsRow}>
             <View style={styles.stat}>
@@ -76,6 +90,11 @@ export default function ProfileScreen({ navigation }) {
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Log out */}
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogOut} activeOpacity={0.7}>
+          <Text style={styles.logoutText}>Log Out</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -199,5 +218,19 @@ const styles = StyleSheet.create({
   menuArrow: {
     color: colors.textMuted,
     fontSize: 20,
+  },
+  logoutBtn: {
+    marginTop: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#f87171',
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: '#f87171',
+    fontSize: 15,
+    fontWeight: '500',
   },
 });

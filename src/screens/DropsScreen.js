@@ -141,10 +141,11 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   headerText: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '700',
     color: colors.textPrimary,
-    letterSpacing: 0.5,
+    letterSpacing: 3,
+    textTransform: 'uppercase',
   },
   headerAccent: {
     color: colors.accentTeal,
@@ -165,9 +166,10 @@ const styles = StyleSheet.create({
   },
   countdownBanner: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
+    borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.accentTeal,
+    borderLeftWidth: 3,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -180,10 +182,10 @@ const styles = StyleSheet.create({
   },
   countdownLabel: {
     color: colors.textMuted,
-    fontSize: 11,
-    fontWeight: '400',
+    fontSize: 9,
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 2,
     marginBottom: 4,
   },
   countdownItem: {
@@ -196,10 +198,10 @@ const styles = StyleSheet.create({
   },
   countdownTime: {
     color: colors.accentTeal,
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
-    letterSpacing: 1,
+    letterSpacing: 3,
   },
   countdownTimerLabel: {
     color: colors.textMuted,
@@ -212,8 +214,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.textPrimary,
-    fontSize: 17,
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
     marginBottom: 12,
   },
   grid: {
@@ -224,7 +228,7 @@ const styles = StyleSheet.create({
   dropCard: {
     width: '47.5%',
     backgroundColor: colors.surface,
-    borderRadius: 10,
+    borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
@@ -238,10 +242,10 @@ const styles = StyleSheet.create({
   liveBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    backgroundColor: 'rgba(74, 222, 128, 0.12)',
     borderWidth: 1,
     borderColor: colors.green,
-    borderRadius: 20,
+    borderRadius: 2,
     paddingHorizontal: 8,
     paddingVertical: 3,
     gap: 4,
@@ -254,19 +258,23 @@ const styles = StyleSheet.create({
   },
   liveBadgeText: {
     color: colors.green,
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
   soonBadge: {
-    backgroundColor: colors.accentTeal,
-    borderRadius: 20,
+    backgroundColor: 'transparent',
+    borderRadius: 2,
+    borderWidth: 1,
+    borderColor: colors.accentTeal,
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
   soonBadgeText: {
-    color: '#000',
-    fontSize: 11,
-    fontWeight: '500',
+    color: colors.accentTeal,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.8,
   },
   dropInfo: {
     padding: 10,

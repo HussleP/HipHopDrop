@@ -140,14 +140,17 @@ const styles = StyleSheet.create({
   },
   displayName: {
     color: colors.textPrimary,
-    fontSize: 20,
-    fontWeight: '500',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
     marginBottom: 4,
   },
   handle: {
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '400',
+    letterSpacing: 0.5,
     marginBottom: 20,
   },
   statsRow: {
@@ -167,15 +170,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    color: colors.textPrimary,
+    color: colors.accentTeal,
     fontSize: 20,
-    fontWeight: '500',
+    fontWeight: '700',
     marginBottom: 2,
+    letterSpacing: 1,
   },
   statLabel: {
     color: colors.textMuted,
-    fontSize: 11,
-    fontWeight: '400',
+    fontSize: 9,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
   statDivider: {
     width: 1,
@@ -184,7 +190,7 @@ const styles = StyleSheet.create({
   },
   menuCard: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
+    borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
@@ -216,8 +222,9 @@ const styles = StyleSheet.create({
   },
   menuLabel: {
     color: colors.textPrimary,
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.5,
     marginBottom: 2,
   },
   menuSub: {

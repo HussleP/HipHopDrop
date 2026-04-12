@@ -88,7 +88,7 @@ export function ArtistProfileSkeleton() {
 
 const styles = StyleSheet.create({
   block: {
-    backgroundColor: colors.border,
+    backgroundColor: colors.surfaceHigh,
     borderRadius: 6,
   },
   container: {

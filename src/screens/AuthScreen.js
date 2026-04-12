@@ -67,9 +67,10 @@ export default function AuthScreen() {
           {/* Logo */}
           <View style={styles.logoSection}>
             <Text style={styles.logoText}>
-              hip-hop <Text style={styles.logoAccent}>drop</Text>
+              HIP-HOP{'\n'}<Text style={styles.logoAccent}>DROP</Text>
             </Text>
-            <Text style={styles.tagline}>Your #1 source for hip-hop news & merch drops</Text>
+            <View style={styles.logoDivider} />
+            <Text style={styles.tagline}>NEWS · DROPS · CULTURE</Text>
           </View>
 
           {/* Mode toggle */}
@@ -169,28 +170,37 @@ const styles = StyleSheet.create({
   },
   logoSection: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 44,
   },
   logoText: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: 36,
+    fontWeight: '800',
     color: colors.textPrimary,
-    letterSpacing: 0.5,
-    marginBottom: 8,
+    letterSpacing: 8,
+    textAlign: 'center',
+    lineHeight: 44,
+    marginBottom: 16,
   },
   logoAccent: {
     color: colors.accentTeal,
   },
+  logoDivider: {
+    width: 40,
+    height: 1,
+    backgroundColor: colors.accentTeal,
+    marginBottom: 12,
+  },
   tagline: {
     color: colors.textMuted,
-    fontSize: 13,
-    fontWeight: '400',
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 3,
     textAlign: 'center',
   },
   modeToggle: {
     flexDirection: 'row',
     backgroundColor: colors.surface,
-    borderRadius: 10,
+    borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.border,
     marginBottom: 28,
@@ -199,7 +209,7 @@ const styles = StyleSheet.create({
   modeBtn: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: 2,
     alignItems: 'center',
   },
   modeBtnActive: {
@@ -207,11 +217,14 @@ const styles = StyleSheet.create({
   },
   modeBtnText: {
     color: colors.textMuted,
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
   modeBtnTextActive: {
     color: '#000',
+    letterSpacing: 1.5,
   },
   form: {
     gap: 16,
@@ -221,18 +234,20 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 9,
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 2,
   },
   input: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
+    borderRadius: 3,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.accentTeal,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 13,
     color: colors.textPrimary,
     fontSize: 15,
     fontWeight: '400',
@@ -245,14 +260,16 @@ const styles = StyleSheet.create({
   },
   submitBtn: {
     backgroundColor: colors.accentTeal,
-    paddingVertical: 14,
-    borderRadius: 10,
+    paddingVertical: 16,
+    borderRadius: 3,
     alignItems: 'center',
     marginTop: 8,
   },
   submitBtnText: {
     color: '#000',
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
 });

@@ -98,7 +98,7 @@ export default function PollCard({ poll }) {
   const totalVotes = Object.values(localVotes).reduce((a, b) => a + b, 0);
   const isTwoOption = options.length === 2;
 
-  const optionColors = ['#00C4B4', '#a855f7', '#14b8a6', '#f87171'];
+  const optionColors = ['#E07B0A', '#00C4D4', '#a855f7', '#E8305A'];
 
   return (
     <View style={styles.card}>
@@ -227,17 +227,19 @@ const styles = StyleSheet.create({
   typeBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: '#2a1a0e',
+    borderRadius: 3,
+    backgroundColor: '#2A1A08',
+    borderWidth: 1,
+    borderColor: '#3A2A10',
   },
-  beefBadge: { backgroundColor: '#2a0e0e' },
-  awardsBadge: { backgroundColor: '#1a1a0e' },
-  versusBadge: { backgroundColor: '#0e1a2a' },
+  beefBadge: { backgroundColor: '#2A0E10', borderColor: '#3A1018' },
+  awardsBadge: { backgroundColor: '#2A2008', borderColor: '#3A3010' },
+  versusBadge: { backgroundColor: '#0A1A2A', borderColor: '#102030' },
   typeBadgeText: {
     color: colors.accentTeal,
-    fontSize: 10,
-    fontWeight: '500',
-    letterSpacing: 0.5,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 1.5,
   },
   totalVotes: {
     color: colors.textMuted,

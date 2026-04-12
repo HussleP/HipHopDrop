@@ -24,7 +24,7 @@ function Logo() {
   return (
     <View style={styles.logoRow}>
       <Text style={styles.logoText}>
-        hip-hop <Text style={styles.logoAccent}>drop</Text>
+        HIP-HOP <Text style={styles.logoAccent}>DROP</Text>
       </Text>
     </View>
   );
@@ -324,10 +324,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '700',
     color: colors.textPrimary,
-    letterSpacing: 0.5,
+    letterSpacing: 3,
   },
   logoAccent: {
     color: colors.accentTeal,
@@ -352,31 +352,34 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   chip: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 7,
-    borderRadius: 20,
+    borderRadius: 3,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     marginRight: 8,
   },
   chipActive: {
-    backgroundColor: colors.accentTeal,
+    backgroundColor: 'transparent',
     borderColor: colors.accentTeal,
   },
   chipText: {
     color: colors.textMuted,
-    fontSize: 13,
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
   chipTextActive: {
-    color: '#000',
-    fontWeight: '500',
+    color: colors.accentTeal,
+    fontWeight: '700',
+    letterSpacing: 1.2,
   },
   heroCard: {
     marginHorizontal: 16,
     marginTop: 16,
-    borderRadius: 10,
+    borderRadius: 4,
     backgroundColor: colors.surface,
     overflow: 'hidden',
     borderWidth: 1,
@@ -403,14 +406,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accentTeal,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 4,
+    borderRadius: 2,
   },
   breakingText: {
     color: '#000',
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: 9,
+    fontWeight: '800',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 2,
   },
   heroContent: {
     padding: 14,
@@ -439,8 +442,10 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.textPrimary,
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   listSection: {
     marginTop: 8,
@@ -457,7 +462,7 @@ const styles = StyleSheet.create({
   articleThumb: {
     width: 80,
     height: 80,
-    borderRadius: 10,
+    borderRadius: 3,
     flexShrink: 0,
   },
   articleInfo: {
@@ -466,19 +471,19 @@ const styles = StyleSheet.create({
   },
   categoryPill: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.surface,
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.accentTeal,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 20,
+    borderRadius: 2,
   },
   categoryPillText: {
     color: colors.accentTeal,
-    fontSize: 10,
-    fontWeight: '500',
+    fontSize: 9,
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1.5,
   },
   articleTitle: {
     color: colors.textPrimary,

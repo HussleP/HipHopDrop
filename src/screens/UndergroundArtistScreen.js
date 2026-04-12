@@ -153,8 +153,10 @@ const styles = StyleSheet.create({
   undergroundBadgeText: { color: colors.textPrimary, fontSize: 11, fontWeight: '500', letterSpacing: 1 },
   artistName: {
     color: colors.textPrimary,
-    fontSize: 34,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: '800',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
     marginBottom: 6,
   },
   location: { color: colors.textMuted, fontSize: 13, marginBottom: 12 },
@@ -202,7 +204,7 @@ const styles = StyleSheet.create({
   projectName: { color: colors.textPrimary, fontSize: 15, fontWeight: '500', marginBottom: 3 },
   projectYear: { color: colors.textMuted, fontSize: 12 },
   newBadge: { borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3 },
-  newBadgeText: { color: '#000', fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+  newBadgeText: { color: '#000', fontSize: 8, fontWeight: '800', letterSpacing: 2 },
   articleCard: {
     flexDirection: 'row',
     paddingVertical: 10,
@@ -224,9 +226,9 @@ const styles = StyleSheet.create({
   articleMeta: { color: colors.textMuted, fontSize: 11 },
   supportBtn: {
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: 3,
     alignItems: 'center',
     marginTop: 8,
   },
-  supportBtnText: { color: '#000', fontSize: 16, fontWeight: '500' },
+  supportBtnText: { color: '#000', fontSize: 11, fontWeight: '800', letterSpacing: 2, textTransform: 'uppercase' },
 });

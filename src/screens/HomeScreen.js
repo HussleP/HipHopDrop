@@ -13,12 +13,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
-import { polls, undergroundArtists } from '../data/mockData';
+import { polls, undergroundArtists, posthumousAlbums } from '../data/mockData';
 import { fetchArticles } from '../services/newsService';
 import PollCard from '../components/PollCard';
 import { HomeFeedSkeleton } from '../components/SkeletonLoader';
 
-const FILTERS = ['All', 'Drops', 'Tours', 'Beef', 'Awards', 'Versus', 'Underground'];
+const FILTERS = ['All', 'Drops', 'Tours', 'Beef', 'Awards', 'Versus', 'Underground', 'Legacy'];
 
 function Logo() {
   return (
@@ -130,6 +130,28 @@ function UndergroundSpotlightCard({ artist, onPress }) {
   );
 }
 
+function LegacyVaultCard({ album, onPress }) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.82}
+      style={[styles.legacyCard, { backgroundColor: album.colorBg }]}
+    >
+      <View style={styles.legacyCoverRow}>
+        <View style={[styles.legacyCover, { borderColor: album.accentColor }]}>
+          <Text style={styles.legacyCoverEmoji}>{album.coverEmoji}</Text>
+        </View>
+        <View style={[styles.legacyVaultBadge, { borderColor: album.accentColor }]}>
+          <Text style={[styles.legacyVaultBadgeText, { color: album.accentColor }]}>✦ LEGACY</Text>
+        </View>
+      </View>
+      <Text style={styles.legacyAlbumTitle} numberOfLines={2}>{album.albumTitle}</Text>
+      <Text style={[styles.legacyArtistName, { color: album.accentColor }]}>{album.artist}</Text>
+      <Text style={styles.legacyTagline} numberOfLines={2}>{album.tagline}</Text>
+    </TouchableOpacity>
+  );
+}
+
 export default function HomeScreen({ navigation }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [articles, setArticles] = useState([]);
@@ -163,7 +185,7 @@ export default function HomeScreen({ navigation }) {
 
   const filteredArticles = activeFilter === 'All'
     ? articles
-    : activeFilter === 'Versus' || activeFilter === 'Underground'
+    : activeFilter === 'Versus' || activeFilter === 'Underground' || activeFilter === 'Legacy'
     ? []
     : articles.filter((a) => a.category === activeFilter);
 
@@ -182,6 +204,7 @@ export default function HomeScreen({ navigation }) {
 
   const showPolls = ['All', 'Beef', 'Awards', 'Versus'].includes(activeFilter);
   const showUnderground = activeFilter === 'All' || activeFilter === 'Underground';
+  const showLegacy = activeFilter === 'All' || activeFilter === 'Legacy';
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -273,6 +296,33 @@ export default function HomeScreen({ navigation }) {
                   key={artist.id}
                   artist={artist}
                   onPress={() => navigation.navigate('UndergroundArtist', { artist })}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Legacy Vault */}
+        {showLegacy && (
+          <View style={styles.legacySection}>
+            <View style={styles.ugSectionHeader}>
+              <Text style={styles.sectionTitle}>☠ Legacy Vault</Text>
+              {activeFilter === 'All' && (
+                <TouchableOpacity onPress={() => setActiveFilter('Legacy')}>
+                  <Text style={styles.seeAll}>See all</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.legacyScroll}
+            >
+              {posthumousAlbums.map(album => (
+                <LegacyVaultCard
+                  key={album.id}
+                  album={album}
+                  onPress={() => navigation.navigate('PosthumousDetail', { album })}
                 />
               ))}
             </ScrollView>
@@ -581,5 +631,70 @@ const styles = StyleSheet.create({
     color: colors.accentTeal,
     fontSize: 13,
     fontWeight: '500',
+  },
+
+  // Legacy Vault
+  legacySection: {
+    marginTop: 20,
+  },
+  legacyScroll: {
+    paddingHorizontal: 16,
+    gap: 12,
+    paddingBottom: 4,
+  },
+  legacyCard: {
+    width: 185,
+    borderRadius: 3,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+    gap: 6,
+  },
+  legacyCoverRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  legacyCover: {
+    width: 52,
+    height: 52,
+    borderRadius: 3,
+    borderWidth: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  legacyCoverEmoji: { fontSize: 26 },
+  legacyVaultBadge: {
+    borderWidth: 1,
+    borderRadius: 2,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+  },
+  legacyVaultBadgeText: {
+    fontSize: 8,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+  },
+  legacyAlbumTitle: {
+    color: colors.textPrimary,
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
+  },
+  legacyArtistName: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  legacyTagline: {
+    color: 'rgba(237,232,223,0.45)',
+    fontSize: 10,
+    fontWeight: '400',
+    lineHeight: 15,
+    fontStyle: 'italic',
+    marginTop: 2,
   },
 });

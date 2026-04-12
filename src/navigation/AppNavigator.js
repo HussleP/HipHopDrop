@@ -13,6 +13,7 @@ import MerchDetailScreen from '../screens/MerchDetailScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import DropAlertsScreen from '../screens/DropAlertsScreen';
 import SavedArticlesScreen from '../screens/SavedArticlesScreen';
+import UndergroundArtistScreen from '../screens/UndergroundArtistScreen';
 import { colors } from '../theme/colors';
 
 const Tab = createBottomTabNavigator();
@@ -23,6 +24,7 @@ function HomeStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeFeed" component={HomeScreen} />
       <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
+      <Stack.Screen name="UndergroundArtist" component={UndergroundArtistScreen} />
     </Stack.Navigator>
   );
 }

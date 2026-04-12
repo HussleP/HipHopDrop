@@ -11,11 +11,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
-import { polls } from '../data/mockData';
+import { polls, undergroundArtists } from '../data/mockData';
 import { fetchArticles } from '../services/newsService';
 import PollCard from '../components/PollCard';
 
-const FILTERS = ['All', 'Drops', 'Tours', 'Beef', 'Awards', 'Versus'];
+const FILTERS = ['All', 'Drops', 'Tours', 'Beef', 'Awards', 'Versus', 'Underground'];
 
 function Logo() {
   return (
@@ -72,6 +72,30 @@ function ArticleRow({ article, onPress }) {
   );
 }
 
+function UndergroundSpotlightCard({ artist, onPress }) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.82}
+      style={[styles.ugCard, { backgroundColor: artist.colorBg }]}
+    >
+      <View style={styles.ugFlameBadge}>
+        <Text style={styles.ugFlameText}>🔥 UNDERGROUND</Text>
+      </View>
+      <Text style={[styles.ugName, { color: '#fff' }]}>{artist.name}</Text>
+      <Text style={styles.ugLocation}>📍 {artist.location}</Text>
+      <View style={styles.ugTagsRow}>
+        {artist.tags.slice(0, 2).map(tag => (
+          <View key={tag} style={[styles.ugTag, { borderColor: artist.accentColor }]}>
+            <Text style={[styles.ugTagText, { color: artist.accentColor }]}>{tag}</Text>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.ugListeners}>{artist.monthlyListeners} monthly listeners</Text>
+    </TouchableOpacity>
+  );
+}
+
 export default function HomeScreen({ navigation }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [articles, setArticles] = useState([]);
@@ -98,7 +122,7 @@ export default function HomeScreen({ navigation }) {
 
   const filteredArticles = activeFilter === 'All'
     ? articles
-    : activeFilter === 'Versus'
+    : activeFilter === 'Versus' || activeFilter === 'Underground'
     ? []
     : articles.filter((a) => a.category === activeFilter);
 
@@ -116,6 +140,7 @@ export default function HomeScreen({ navigation }) {
   const listArticles = filteredArticles.slice(1);
 
   const showPolls = ['All', 'Beef', 'Awards', 'Versus'].includes(activeFilter);
+  const showUnderground = activeFilter === 'All' || activeFilter === 'Underground';
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -185,6 +210,33 @@ export default function HomeScreen({ navigation }) {
             {filteredPolls.map(poll => (
               <PollCard key={poll.id} poll={poll} />
             ))}
+          </View>
+        )}
+
+        {/* Underground Spotlight */}
+        {showUnderground && (
+          <View style={styles.ugSection}>
+            <View style={styles.ugSectionHeader}>
+              <Text style={styles.sectionTitle}>🔥 Underground Spotlight</Text>
+              {activeFilter === 'All' && (
+                <TouchableOpacity onPress={() => setActiveFilter('Underground')}>
+                  <Text style={styles.seeAll}>See all</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.ugScroll}
+            >
+              {undergroundArtists.map(artist => (
+                <UndergroundSpotlightCard
+                  key={artist.id}
+                  artist={artist}
+                  onPress={() => navigation.navigate('UndergroundArtist', { artist })}
+                />
+              ))}
+            </ScrollView>
           </View>
         )}
 
@@ -328,6 +380,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 12,
   },
   sectionTitle: {
@@ -408,5 +463,78 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 15,
     fontWeight: '400',
+  },
+  ugSection: {
+    marginTop: 20,
+    paddingHorizontal: 0,
+  },
+  ugSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  ugScroll: {
+    paddingHorizontal: 16,
+    gap: 12,
+    paddingBottom: 4,
+  },
+  ugCard: {
+    width: 200,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    gap: 6,
+  },
+  ugFlameBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: 20,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginBottom: 4,
+  },
+  ugFlameText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '600',
+    letterSpacing: 0.8,
+  },
+  ugName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  ugLocation: {
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 11,
+  },
+  ugTagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 4,
+  },
+  ugTag: {
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  ugTagText: {
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  ugListeners: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 10,
+    marginTop: 6,
+  },
+  seeAll: {
+    color: colors.accentTeal,
+    fontSize: 13,
+    fontWeight: '500',
   },
 });

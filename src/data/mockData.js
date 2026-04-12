@@ -189,6 +189,136 @@ export const comingSoonDrops = [
   },
 ];
 
+export const undergroundArtists = [
+  {
+    id: 'ug1',
+    name: 'Slayr',
+    location: 'Atlanta, GA',
+    colorBg: '#1a0e2a',
+    accentColor: '#a855f7',
+    tags: ['Dark Trap', 'Melodic', 'Underground'],
+    bio: 'Slayr brings a raw, cinematic approach to trap music with haunting melodies and hard-hitting production. Known for his emotional lyricism and distinct vocal delivery, he is one of the most exciting underground voices right now.',
+    monthlyListeners: '12.4K',
+    latestProject: 'Shadow Work EP',
+    releaseYear: '2024',
+    articles: [
+      {
+        id: 'ug1a1',
+        category: 'Underground',
+        title: 'Slayr\'s "Shadow Work EP" Is the Underground Release of the Year',
+        source: 'Hip-Hop Drop',
+        timestamp: '1d ago',
+        readTime: '3 min read',
+        imageColor: '#1a0e2a',
+        body: [
+          'Slayr has been making waves in the underground scene with his latest project, Shadow Work EP. The five-track release showcases a maturity in songwriting that belies his age, with production from some of Atlanta\'s most sought-after beatmakers.',
+          'Tracks like "Midnight Ritual" and "Cold Floors" have been circulating on social media, with fans praising the project\'s cohesive aesthetic and emotional depth. The EP blends dark trap production with introspective lyrics about struggle, loyalty, and ambition.',
+          'With Shadow Work EP, Slayr positions himself as one to watch in 2025. Industry insiders are already predicting a major label deal if he keeps this momentum going.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'ug2',
+    name: 'EsDeeKid',
+    location: 'Chicago, IL',
+    colorBg: '#0e1a1a',
+    accentColor: '#00C4B4',
+    tags: ['Drill', 'Street Rap', 'Conscious'],
+    bio: 'EsDeeKid blends Chicago drill with conscious storytelling, painting vivid pictures of street life while offering a perspective that goes beyond the surface. His wordplay and flow are unmatched in the underground.',
+    monthlyListeners: '8.7K',
+    latestProject: 'No Cap No Gown',
+    releaseYear: '2024',
+    articles: [
+      {
+        id: 'ug2a1',
+        category: 'Underground',
+        title: 'EsDeeKid Drops "No Cap No Gown" — A Chicago Drill Masterclass',
+        source: 'Hip-Hop Drop',
+        timestamp: '3d ago',
+        readTime: '4 min read',
+        imageColor: '#0e1a1a',
+        body: [
+          'Chicago\'s EsDeeKid has released No Cap No Gown, a full-length project that cements his place as one of the city\'s most promising underground talents. The album draws on the rich tradition of Chicago drill while injecting a conscious, narrative-driven approach.',
+          'Standout cuts include "636 Stories" and "Graduated in the Streets", both of which showcase EsDeeKid\'s gift for vivid storytelling. The production draws from both classic drill and contemporary trap, creating a sound that feels both familiar and fresh.',
+          'No Cap No Gown has earned co-signs from several established Chicago artists, suggesting that EsDeeKid\'s underground run may be short-lived — in the best possible way.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'ug3',
+    name: 'Fake Mink',
+    location: 'Los Angeles, CA',
+    colorBg: '#1a1a0e',
+    accentColor: '#f59e0b',
+    tags: ['Alternative Rap', 'Lo-Fi', 'Experimental'],
+    bio: 'Fake Mink occupies a unique lane in the underground, blending lo-fi aesthetics with sharp lyricism and genre-defying production. His music feels like a late-night drive through Los Angeles — cinematic, introspective, and unpredictable.',
+    monthlyListeners: '6.2K',
+    latestProject: 'Synthetic Dreams',
+    releaseYear: '2025',
+    articles: [
+      {
+        id: 'ug3a1',
+        category: 'Underground',
+        title: 'Fake Mink\'s "Synthetic Dreams" Is LA\'s Most Slept-On Project',
+        source: 'Hip-Hop Drop',
+        timestamp: '5d ago',
+        readTime: '3 min read',
+        imageColor: '#1a1a0e',
+        body: [
+          'Los Angeles-based Fake Mink has quietly released one of the year\'s most compelling underground projects with Synthetic Dreams. The album defies easy categorization, blending lo-fi hip-hop with experimental production and razor-sharp lyricism.',
+          'Fake Mink\'s delivery is unconventional — switching between melodic hooks and rapid-fire verses with effortless control. Tracks like "Malibu Static" and "Neon Rust" have developed cult followings online, with fans drawn to their cinematic quality.',
+          'Synthetic Dreams is the kind of project that sounds better with each listen, revealing new layers of detail and meaning. Fake Mink is one of the most original voices in LA\'s underground right now.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'ug4',
+    name: 'Kneecap',
+    location: 'Belfast, Ireland',
+    colorBg: '#0e1a0e',
+    accentColor: '#4ade80',
+    tags: ['Irish Rap', 'Political', 'Bilingual', 'Provocateur'],
+    bio: 'Kneecap are a bilingual Irish-language hip-hop trio from Belfast who rap in Irish Gaelic and English. Politically charged, chaotic, and completely fearless, they\'ve become one of the most talked-about acts in the world — blending punk energy with hard-hitting rap and unapologetic Irish identity.',
+    monthlyListeners: '284K',
+    latestProject: 'Fine Art',
+    releaseYear: '2024',
+    articles: [
+      {
+        id: 'ug4a1',
+        category: 'Underground',
+        title: 'Kneecap Are the Most Dangerous Group in Hip-Hop Right Now',
+        source: 'Hip-Hop Drop',
+        timestamp: '2d ago',
+        readTime: '5 min read',
+        imageColor: '#0e1a0e',
+        body: [
+          'Belfast trio Kneecap have taken the global music scene by storm with their explosive blend of Irish-language rap, political defiance, and raw punk energy. The group — Mo Chara, Móglaí Bap, and DJ Próvaí — have gone from Belfast estates to international festival stages in just a few years.',
+          'Their debut album Fine Art dropped in 2024 to widespread critical acclaim, landing them on every major year-end list and earning them a Brit Award nomination. Tracks like "Get Your Brits Out" and "Sick Thoughts" showcase the trio\'s ability to balance humor, fury, and genuine artistic vision.',
+          'A semi-autobiographical film about the group, also titled Kneecap, premiered at Sundance and toured festivals worldwide — starring the three members as themselves. The film brought their story to a mainstream audience that had never encountered Irish-language culture before.',
+          'Kneecap represent something genuinely new in hip-hop: music that is rooted in a specific community and language while speaking to a universal frustration with power. They are loud, political, and completely uncompromising — exactly what the genre needs.',
+        ],
+      },
+      {
+        id: 'ug4a2',
+        category: 'Underground',
+        title: 'Kneecap\'s "Fine Art" Album: Track-by-Track Breakdown',
+        source: 'Hip-Hop Drop',
+        timestamp: '4d ago',
+        readTime: '4 min read',
+        imageColor: '#0e2a0e',
+        body: [
+          'Fine Art is Kneecap\'s full-length statement — a 12-track project that swings between party anthems, political manifestos, and tender moments of community pride. The album was produced largely by the group alongside longtime collaborator BRÍCE, whose beats blend grime, drill, and electronic music.',
+          'Standout moments include the anthemic "Parful" and the chaotic energy of "Better Way to Live". The Irish-language verses are subtitled on streaming platforms, but the emotion transcends language — you don\'t need to speak Irish to understand exactly what Kneecap are saying.',
+          'Fine Art is available on all major streaming platforms. If you haven\'t heard it yet, fix that immediately.',
+        ],
+      },
+    ],
+  },
+];
+
 export const polls = [
   // Beef polls
   {

@@ -7,10 +7,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen';
 import ArticleDetailScreen from '../screens/ArticleDetailScreen';
 import SearchScreen from '../screens/SearchScreen';
+import ArtistProfileScreen from '../screens/ArtistProfileScreen';
 import DropsScreen from '../screens/DropsScreen';
 import MerchDetailScreen from '../screens/MerchDetailScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import DropAlertsScreen from '../screens/DropAlertsScreen';
+import SavedArticlesScreen from '../screens/SavedArticlesScreen';
 import { colors } from '../theme/colors';
 
 const Tab = createBottomTabNavigator();
@@ -20,6 +22,16 @@ function HomeStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeFeed" component={HomeScreen} />
+      <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function SearchStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="SearchMain" component={SearchScreen} />
+      <Stack.Screen name="ArtistProfile" component={ArtistProfileScreen} />
       <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
     </Stack.Navigator>
   );
@@ -39,6 +51,7 @@ function ProfileStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileMain" component={ProfileScreen} />
       <Stack.Screen name="DropAlerts" component={DropAlertsScreen} />
+      <Stack.Screen name="SavedArticles" component={SavedArticlesScreen} />
     </Stack.Navigator>
   );
 }
@@ -82,7 +95,7 @@ export default function AppNavigator() {
         })}
       >
         <Tab.Screen name="Home" component={HomeStack} />
-        <Tab.Screen name="Search" component={SearchScreen} />
+        <Tab.Screen name="Search" component={SearchStack} />
         <Tab.Screen name="Drops" component={DropsStack} />
         <Tab.Screen name="Profile" component={ProfileStack} />
       </Tab.Navigator>

@@ -35,7 +35,7 @@ function formatFollowers(n) {
   return `${n} followers`;
 }
 
-export default function SearchScreen() {
+export default function SearchScreen({ navigation }) {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [searching, setSearching] = useState(false);
@@ -112,7 +112,12 @@ export default function SearchScreen() {
               <>
                 <Text style={styles.sectionTitle}>Artists</Text>
                 {searchResults.artists.map(artist => (
-                  <View key={artist.id} style={styles.resultRow}>
+                  <TouchableOpacity
+                    key={artist.id}
+                    style={styles.resultRow}
+                    onPress={() => navigation.navigate('ArtistProfile', { artist })}
+                    activeOpacity={0.7}
+                  >
                     {artist.imageUrl
                       ? <Image source={{ uri: artist.imageUrl }} style={styles.artistThumb} />
                       : <View style={[styles.artistThumb, { backgroundColor: colors.surface }]} />}
@@ -120,7 +125,8 @@ export default function SearchScreen() {
                       <Text style={styles.resultName}>{artist.name}</Text>
                       <Text style={styles.resultSub}>{formatFollowers(artist.followers)}</Text>
                     </View>
-                  </View>
+                    <Text style={{ color: colors.textMuted, fontSize: 20 }}>›</Text>
+                  </TouchableOpacity>
                 ))}
               </>
             )}
@@ -174,7 +180,12 @@ export default function SearchScreen() {
                 <ActivityIndicator color={colors.accentTeal} style={{ marginTop: 20 }} />
               ) : trendingArtists.length > 0 ? (
                 trendingArtists.map((artist, index) => (
-                  <View key={artist.id} style={styles.trendingRow}>
+                  <TouchableOpacity
+                    key={artist.id}
+                    style={styles.trendingRow}
+                    onPress={() => navigation.navigate('ArtistProfile', { artist })}
+                    activeOpacity={0.7}
+                  >
                     <Text style={styles.trendingRank}>{index + 1}</Text>
                     {artist.imageUrl
                       ? <Image source={{ uri: artist.imageUrl }} style={styles.trendingThumb} />
@@ -184,7 +195,7 @@ export default function SearchScreen() {
                       <Text style={styles.trendingCount}>{formatFollowers(artist.followers)}</Text>
                     </View>
                     <Text style={styles.trendingArrow}>›</Text>
-                  </View>
+                  </TouchableOpacity>
                 ))
               ) : (
                 trendingSearches.map(item => (

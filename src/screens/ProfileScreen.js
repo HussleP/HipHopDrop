@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,10 +11,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
 import { logOut, getCurrentUser } from '../services/authService';
+import { getSavedCount } from '../services/savedArticlesService';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 const MENU_ITEMS = [
   { id: 'alerts', label: 'Drop Alerts', sub: 'Manage your notifications', emoji: '🔔', nav: 'DropAlerts' },
-  { id: 'saved', label: 'Saved Articles', sub: '12 articles saved', emoji: '♡', nav: null },
+  { id: 'saved', label: 'Saved Articles', sub: 'Your bookmarked articles', emoji: '♡', nav: 'SavedArticles' },
   { id: 'followed', label: 'Followed Artists', sub: '7 artists', emoji: '⭐', nav: null },
   { id: 'notifications', label: 'Notification Settings', sub: 'Push, email preferences', emoji: '⚙️', nav: null },
   { id: 'about', label: 'About Hip-Hop Drop', sub: 'Version 1.0.0', emoji: 'ℹ️', nav: null },
@@ -22,6 +25,13 @@ const MENU_ITEMS = [
 
 export default function ProfileScreen({ navigation }) {
   const user = getCurrentUser();
+  const [savedCount, setSavedCount] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      getSavedCount().then(setSavedCount);
+    }, [])
+  );
 
   async function handleLogOut() {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -56,7 +66,7 @@ export default function ProfileScreen({ navigation }) {
             </View>
             <View style={styles.statDivider} />
             <View style={styles.stat}>
-              <Text style={styles.statValue}>12</Text>
+              <Text style={styles.statValue}>{savedCount}</Text>
               <Text style={styles.statLabel}>Saved</Text>
             </View>
             <View style={styles.statDivider} />

@@ -10,6 +10,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
+import { subscribeToReactions, getUserReaction, toggleReaction } from '../services/interactionsService';
+import CommentsSheet from './CommentsSheet';
 
 function getPercent(votes, total) {
   if (total === 0) return 0;
@@ -36,17 +38,22 @@ export default function PollCard({ poll }) {
     ['A', 'B', 'C', 'D'].forEach(k => { obj[k] = new Animated.Value(0); });
     return obj;
   });
+  const [reactions, setReactions] = useState({ likes: 0, dislikes: 0 });
+  const [userReaction, setUserReaction] = useState(null);
+  const [showComments, setShowComments] = useState(false);
 
   const storageKey = `poll_vote_${poll.id}`;
 
   useEffect(() => {
-    // Load saved vote
     AsyncStorage.getItem(storageKey).then(saved => {
       if (saved) {
         setVoted(saved);
         initVotes(saved);
       }
     });
+    getUserReaction(poll.id).then(setUserReaction);
+    const unsub = subscribeToReactions(poll.id, setReactions);
+    return unsub;
   }, []);
 
   function initVotes(votedKey) {
@@ -123,6 +130,13 @@ export default function PollCard({ poll }) {
     } catch (err) {
       console.warn('Share error:', err);
     }
+  }
+
+  async function handleReaction(type) {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const next = userReaction === type ? null : type;
+    setUserReaction(next);
+    await toggleReaction(poll.id, type);
   }
 
   const options = [
@@ -241,15 +255,67 @@ export default function PollCard({ poll }) {
 
       {/* Footer row */}
       <View style={styles.footer}>
-        {!voted
-          ? <Text style={styles.votePrompt}>Cast your vote</Text>
-          : <Text style={styles.votePrompt}>{Object.values(localVotes).reduce((a, b) => a + b, 0).toLocaleString()} votes</Text>
-        }
+        {/* Like */}
+        <TouchableOpacity
+          style={[styles.reactionBtn, userReaction === 'like' && styles.reactionBtnLiked]}
+          onPress={() => handleReaction('like')}
+          activeOpacity={0.75}
+        >
+          <Text style={[styles.reactionIcon, userReaction === 'like' && { color: colors.accentTeal }]}>
+            {userReaction === 'like' ? '▲' : '△'}
+          </Text>
+          {reactions.likes > 0 && (
+            <Text style={[styles.reactionCount, userReaction === 'like' && { color: colors.accentTeal }]}>
+              {reactions.likes}
+            </Text>
+          )}
+        </TouchableOpacity>
+
+        {/* Dislike */}
+        <TouchableOpacity
+          style={[styles.reactionBtn, userReaction === 'dislike' && styles.reactionBtnDisliked]}
+          onPress={() => handleReaction('dislike')}
+          activeOpacity={0.75}
+        >
+          <Text style={[styles.reactionIcon, userReaction === 'dislike' && { color: colors.neonPink }]}>
+            {userReaction === 'dislike' ? '▼' : '▽'}
+          </Text>
+          {reactions.dislikes > 0 && (
+            <Text style={[styles.reactionCount, userReaction === 'dislike' && { color: colors.neonPink }]}>
+              {reactions.dislikes}
+            </Text>
+          )}
+        </TouchableOpacity>
+
+        {/* Vote count or prompt */}
+        <Text style={styles.votePrompt}>
+          {!voted
+            ? 'Cast your vote'
+            : `${Object.values(localVotes).reduce((a, b) => a + b, 0).toLocaleString()} votes`}
+        </Text>
+
+        {/* Comments */}
+        <TouchableOpacity
+          style={styles.footerIconBtn}
+          onPress={() => { Haptics.selectionAsync(); setShowComments(true); }}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.footerIconText}>💬</Text>
+        </TouchableOpacity>
+
+        {/* Share */}
         <TouchableOpacity onPress={handleShare} style={styles.shareBtn} activeOpacity={0.7}>
           <Text style={styles.shareIcon}>↑</Text>
           <Text style={styles.shareLabel}>Share</Text>
         </TouchableOpacity>
       </View>
+
+      <CommentsSheet
+        visible={showComments}
+        onClose={() => setShowComments(false)}
+        contentId={poll.id}
+        contentTitle={poll.question}
+      />
     </View>
   );
 }
@@ -407,24 +473,59 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 6,
     marginTop: 12,
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  votePrompt: {
+  reactionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 2,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  reactionBtnLiked: {
+    borderColor: colors.accentTeal,
+    backgroundColor: 'rgba(224,123,10,0.08)',
+  },
+  reactionBtnDisliked: {
+    borderColor: colors.neonPink,
+    backgroundColor: 'rgba(232,48,90,0.08)',
+  },
+  reactionIcon: {
     color: colors.textMuted,
-    fontSize: 11,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  reactionCount: {
+    color: colors.textMuted,
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  votePrompt: {
+    flex: 1,
+    color: colors.textMuted,
+    fontSize: 10,
     fontWeight: '400',
     letterSpacing: 0.3,
+  },
+  footerIconBtn: {
+    padding: 4,
+  },
+  footerIconText: {
+    fontSize: 14,
   },
   shareBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 2,
     borderWidth: 1,
     borderColor: colors.border,
@@ -432,12 +533,12 @@ const styles = StyleSheet.create({
   },
   shareIcon: {
     color: colors.accentTeal,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
   },
   shareLabel: {
     color: colors.accentTeal,
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
     letterSpacing: 1.5,
     textTransform: 'uppercase',

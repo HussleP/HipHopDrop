@@ -7,21 +7,28 @@ const BASE     = 'https://www.googleapis.com/youtube/v3';
 console.log('[YouTube] API_KEY loaded:', API_KEY ? `${API_KEY.slice(0, 8)}...` : 'MISSING');
 const CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours
 
-// Search queries per filter tab
-const QUERIES = {
-  All:         'Kendrick Lamar official music video 2024 2025',
-  New:         'Kendrick Lamar OR Drake OR Travis Scott OR J Cole official music video 2025',
-  Hot:         'Kendrick Lamar OR hip hop official music video most viewed 2024 2025',
-  Classics:    'Kendrick Lamar OR Tupac OR Biggie OR Jay-Z classic official music video',
-  Underground: 'underground hip hop rap official music video 2025',
-};
-
-// Artists to always inject at the top of the All feed
-const FEATURED_ARTIST_QUERIES = [
-  'Kendrick Lamar official music video 2025',
-  'Kendrick Lamar Not Like Us official',
-  'Kendrick Lamar GNX official',
+// Full artist roster — drives all queries and featured injection
+const ROSTER = [
+  'Kendrick Lamar', 'Baby Keem',  'ASAP Rocky',    'Playboi Carti',
+  'Future',         'SLAYR',      'Yeat',           'Don Toliver',
+  'Kanye West',     'Tupac',      'JID',            'Nas',
+  'Fred Again',     'Danny Brown','Freddie Gibbs',  'Tyler the Creator',
+  'Paris Texas',    'Thundercat', 'Kneecap',        'Young Thug',
+  'YoungBoy Never Broke Again',   'Denzel Curry',   'The Scythe',
 ];
+
+// Helper: build a YouTube OR query from a slice of the roster
+function rosterQuery(slice, suffix = 'official music video') {
+  return `${slice.join(' OR ')} ${suffix}`;
+}
+
+const QUERIES = {
+  All:         rosterQuery(ROSTER.slice(0, 10),  'official music video 2024 2025'),
+  New:         rosterQuery(ROSTER.slice(0, 12),  'official music video 2025'),
+  Hot:         rosterQuery(ROSTER.slice(0, 10),  'official music video most viewed'),
+  Classics:    rosterQuery(['Tupac','Nas','Kanye West','Tyler the Creator','Denzel Curry','Danny Brown','Freddie Gibbs'], 'classic official music video'),
+  Underground: rosterQuery(['JID','Denzel Curry','Freddie Gibbs','Danny Brown','Paris Texas','Kneecap','The Scythe','SLAYR','Yeat'], 'official music video 2025'),
+};
 
 // Sort order per filter
 const ORDER = {
@@ -198,13 +205,19 @@ export async function fetchVideos(category = 'All') {
     const details = await fetchVideoDetails(ids);
     let videos    = items.map((item, i) => mapItem(item, details, i, category));
 
-    // For the All tab, inject fresh Kendrick videos at the top
+    // For the All tab, inject 3 rotating featured artist videos at the top
     if (category === 'All') {
-      const kendrickVideos = await Promise.all(
-        FEATURED_ARTIST_QUERIES.map((q, i) => fetchArtistVideo(q, i))
+      // Always include Kendrick + 2 random others from the roster
+      const others = [...ROSTER].filter(a => a !== 'Kendrick Lamar')
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2);
+      const featured = ['Kendrick Lamar', ...others];
+      const featuredVideos = await Promise.all(
+        featured.map((artist, i) =>
+          fetchArtistVideo(`${artist} official music video`, i)
+        )
       );
-      const valid = kendrickVideos.filter(Boolean);
-      // Deduplicate by videoId
+      const valid = featuredVideos.filter(Boolean);
       const existingIds = new Set(videos.map(v => v.videoId));
       const fresh = valid.filter(v => !existingIds.has(v.videoId));
       videos = [...fresh, ...videos];

@@ -205,13 +205,9 @@ export async function fetchVideos(category = 'All') {
     const details = await fetchVideoDetails(ids);
     let videos    = items.map((item, i) => mapItem(item, details, i, category));
 
-    // For the All tab, inject 3 rotating featured artist videos at the top
+    // For the All tab, inject 3 randomly chosen artists from the full roster
     if (category === 'All') {
-      // Always include Kendrick + 2 random others from the roster
-      const others = [...ROSTER].filter(a => a !== 'Kendrick Lamar')
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 2);
-      const featured = ['Kendrick Lamar', ...others];
+      const featured = [...ROSTER].sort(() => Math.random() - 0.5).slice(0, 3);
       const featuredVideos = await Promise.all(
         featured.map((artist, i) =>
           fetchArtistVideo(`${artist} official music video`, i)

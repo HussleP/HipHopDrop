@@ -19,7 +19,7 @@ import { fetchVideos, refreshVideos } from '../services/youtubeService';
 const { width } = Dimensions.get('window');
 const THUMB_HEIGHT = (width - 32) * (9 / 16);
 
-const FILTERS = ['All', 'New', 'Hot', 'Classics', 'Underground'];
+const FILTERS = ['All', 'New', 'Hot', 'Classics', 'Underground', 'Producers'];
 
 function thumbUrl(videoId) {
   return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;

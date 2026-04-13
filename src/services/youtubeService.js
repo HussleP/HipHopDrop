@@ -28,6 +28,7 @@ const QUERIES = {
   Hot:         rosterQuery(ROSTER.slice(0, 10),  'official music video most viewed'),
   Classics:    rosterQuery(['Tupac','Nas','Kanye West','Tyler the Creator','Denzel Curry','Danny Brown','Freddie Gibbs'], 'classic official music video'),
   Underground: rosterQuery(['JID','Denzel Curry','Freddie Gibbs','Danny Brown','Paris Texas','Kneecap','The Scythe','SLAYR','Yeat'], 'official music video 2025'),
+  Producers:   rosterQuery(['Alchemist','Madlib','Kanye West','Metro Boomin','Dr Dre','Pharrell'], 'producer official music video hip hop'),
 };
 
 // Sort order per filter

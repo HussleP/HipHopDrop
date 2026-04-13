@@ -21,7 +21,7 @@ const MENU_ITEMS = [
   { id: 'tip',           label: 'Submit a Tip',          sub: 'Send us a story or sighting', emoji: '📬', nav: 'SubmitTip'    },
   { id: 'followed',      label: 'Followed Artists',      sub: '7 artists',                   emoji: '⭐', nav: null           },
   { id: 'notifications', label: 'Notification Settings', sub: 'Push, email preferences',     emoji: '⚙️', nav: null           },
-  { id: 'about',         label: 'About Hip-Hop Drop',    sub: 'Version 1.0.0',               emoji: 'ℹ️', nav: null           },
+  { id: 'about',         label: 'About Hip-Hop Drop',    sub: 'Version 1.1.0 · Legal',       emoji: 'ℹ️', nav: 'About'        },
 ];
 
 export default function ProfileScreen({ navigation }) {

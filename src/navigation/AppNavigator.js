@@ -14,6 +14,9 @@ import ProfileScreen from '../screens/ProfileScreen';
 import DropAlertsScreen from '../screens/DropAlertsScreen';
 import SavedArticlesScreen from '../screens/SavedArticlesScreen';
 import SubmitTipScreen from '../screens/SubmitTipScreen';
+import AboutScreen from '../screens/AboutScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import TermsScreen from '../screens/TermsScreen';
 import UndergroundArtistScreen from '../screens/UndergroundArtistScreen';
 import PosthumousDetailScreen from '../screens/PosthumousDetailScreen';
 import VideosScreen from '../screens/VideosScreen';
@@ -68,7 +71,10 @@ function ProfileStack() {
       <Stack.Screen name="ProfileMain"   component={ProfileScreen}      />
       <Stack.Screen name="DropAlerts"    component={DropAlertsScreen}   />
       <Stack.Screen name="SavedArticles" component={SavedArticlesScreen} />
-      <Stack.Screen name="SubmitTip"     component={SubmitTipScreen}    />
+      <Stack.Screen name="SubmitTip"     component={SubmitTipScreen}     />
+      <Stack.Screen name="About"         component={AboutScreen}         />
+      <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+      <Stack.Screen name="Terms"         component={TermsScreen}         />
     </Stack.Navigator>
   );
 }

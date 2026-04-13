@@ -1,18 +1,27 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { musicVideos } from '../data/mockData';
 
-const API_KEY  = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY;
+const API_KEY  = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY || 'PASTE_YOUR_KEY_HERE';
 const BASE     = 'https://www.googleapis.com/youtube/v3';
+
+console.log('[YouTube] API_KEY loaded:', API_KEY ? `${API_KEY.slice(0, 8)}...` : 'MISSING');
 const CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours
 
 // Search queries per filter tab
 const QUERIES = {
-  All:         'hip hop rap music video 2025',
-  New:         'new hip hop music video 2025',
-  Hot:         'trending hip hop rap music video',
-  Classics:    'classic hip hop music video 90s 2000s',
-  Underground: 'underground hip hop music video 2025',
+  All:         'Kendrick Lamar official music video 2024 2025',
+  New:         'Kendrick Lamar OR Drake OR Travis Scott OR J Cole official music video 2025',
+  Hot:         'Kendrick Lamar OR hip hop official music video most viewed 2024 2025',
+  Classics:    'Kendrick Lamar OR Tupac OR Biggie OR Jay-Z classic official music video',
+  Underground: 'underground hip hop rap official music video 2025',
 };
+
+// Artists to always inject at the top of the All feed
+const FEATURED_ARTIST_QUERIES = [
+  'Kendrick Lamar official music video 2025',
+  'Kendrick Lamar Not Like Us official',
+  'Kendrick Lamar GNX official',
+];
 
 // Sort order per filter
 const ORDER = {
@@ -107,6 +116,30 @@ function mapItem(item, details, index, category) {
   };
 }
 
+// Fetch the latest video for a specific artist query
+async function fetchArtistVideo(query, index) {
+  const url = [
+    `${BASE}/search`,
+    `?part=snippet`,
+    `&q=${encodeURIComponent(query)}`,
+    `&type=video`,
+    `&videoCategoryId=10`,
+    `&order=date`,
+    `&maxResults=3`,
+    `&regionCode=US`,
+    `&key=${API_KEY}`,
+  ].join('');
+
+  const res  = await fetch(url);
+  const json = await res.json();
+  const items = (json.items || []).filter(i => i.id?.videoId);
+  if (!items.length) return null;
+
+  const ids     = items.map(i => i.id.videoId);
+  const details = await fetchVideoDetails(ids);
+  return mapItem(items[0], details, index, 'New');
+}
+
 // ─── Main export ─────────────────────────────────────────────────────────────
 
 /**
@@ -142,11 +175,13 @@ export async function fetchVideos(category = 'All') {
       `?part=snippet`,
       `&q=${query}`,
       `&type=video`,
-      `&videoCategoryId=10`,   // Music category
+      `&videoCategoryId=10`,
+      `&videoDefinition=high`,
       `&order=${order}`,
       `&maxResults=20`,
       `&regionCode=US`,
       `&relevanceLanguage=en`,
+      `&safeSearch=moderate`,
       `&key=${API_KEY}`,
     ].join('');
 
@@ -161,7 +196,19 @@ export async function fetchVideos(category = 'All') {
     const items   = (json.items || []).filter(i => i.id?.videoId);
     const ids     = items.map(i => i.id.videoId);
     const details = await fetchVideoDetails(ids);
-    const videos  = items.map((item, i) => mapItem(item, details, i, category));
+    let videos    = items.map((item, i) => mapItem(item, details, i, category));
+
+    // For the All tab, inject fresh Kendrick videos at the top
+    if (category === 'All') {
+      const kendrickVideos = await Promise.all(
+        FEATURED_ARTIST_QUERIES.map((q, i) => fetchArtistVideo(q, i))
+      );
+      const valid = kendrickVideos.filter(Boolean);
+      // Deduplicate by videoId
+      const existingIds = new Set(videos.map(v => v.videoId));
+      const fresh = valid.filter(v => !existingIds.has(v.videoId));
+      videos = [...fresh, ...videos];
+    }
 
     // Persist to cache
     await AsyncStorage.setItem(cacheKey, JSON.stringify({

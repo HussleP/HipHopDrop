@@ -14,6 +14,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import DropAlertsScreen from '../screens/DropAlertsScreen';
 import SavedArticlesScreen from '../screens/SavedArticlesScreen';
 import SubmitTipScreen from '../screens/SubmitTipScreen';
+import LabelSelectScreen from '../screens/LabelSelectScreen';
 import AboutScreen from '../screens/AboutScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsScreen from '../screens/TermsScreen';
@@ -72,6 +73,7 @@ function ProfileStack() {
       <Stack.Screen name="DropAlerts"    component={DropAlertsScreen}   />
       <Stack.Screen name="SavedArticles" component={SavedArticlesScreen} />
       <Stack.Screen name="SubmitTip"     component={SubmitTipScreen}     />
+      <Stack.Screen name="LabelSelect"   component={LabelSelectScreen}   />
       <Stack.Screen name="About"         component={AboutScreen}         />
       <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
       <Stack.Screen name="Terms"         component={TermsScreen}         />

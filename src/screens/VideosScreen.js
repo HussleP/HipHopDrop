@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { fetchVideos, refreshVideos } from '../services/youtubeService';
 
@@ -71,7 +72,7 @@ function PlayIcon() {
   return (
     <View style={styles.playIconWrap}>
       <View style={styles.playIconCircle}>
-        <Text style={styles.playIconTriangle}>▶</Text>
+        <Ionicons name="play" size={18} color="#fff" />
       </View>
     </View>
   );
@@ -123,7 +124,7 @@ function VideoRow({ video, onPress }) {
           <Text style={styles.rowDurationText}>{video.duration}</Text>
         </View>
         <View style={styles.rowPlayOverlay}>
-          <Text style={styles.rowPlayIcon}>▶</Text>
+          <Ionicons name="play" size={14} color="#fff" />
         </View>
       </View>
       <View style={styles.rowInfo}>
@@ -169,7 +170,7 @@ export default function VideosScreen({ navigation }) {
 
   function openVideo(video) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate('VideoPlayer', { video });
+    navigation.navigate('VideoPlayer', { video, allVideos: videos });
   }
 
   async function handleRefresh() {

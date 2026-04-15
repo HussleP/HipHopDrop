@@ -6,17 +6,10 @@
  *  - Scrollable comment thread (real-time)
  *  - Text input to post new comments
  *  - Like button on individual comments
- *
- * Usage:
- *   <CommentsSheet
- *     visible={showComments}
- *     onClose={() => setShowComments(false)}
- *     contentId={article.id}
- *     contentTitle={article.title}
- *   />
+ *  - @mention tagging — type @ to search and tag any user
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -30,6 +23,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import {
   subscribeToReactions,
@@ -38,6 +32,7 @@ import {
   toggleReaction,
   postComment,
   likeComment,
+  searchUsers,
 } from '../services/interactionsService';
 
 // ─── Time formatter ───────────────────────────────────────────────────────────
@@ -54,6 +49,23 @@ function timeAgo(ts) {
   return `${d}d ago`;
 }
 
+// ─── Render comment text with highlighted @mentions ───────────────────────────
+function CommentText({ text }) {
+  // Split on @word boundaries, keeping the delimiter
+  const parts = text.split(/(@\w[\w\s]*?(?=\s@|\s|$))/g);
+  return (
+    <Text style={styles.commentText}>
+      {parts.map((part, i) =>
+        part.startsWith('@') ? (
+          <Text key={i} style={styles.mentionText}>{part}</Text>
+        ) : (
+          <Text key={i}>{part}</Text>
+        )
+      )}
+    </Text>
+  );
+}
+
 // ─── Single comment row ───────────────────────────────────────────────────────
 function CommentRow({ comment, contentId }) {
   const [liked, setLiked] = useState(false);
@@ -67,7 +79,6 @@ function CommentRow({ comment, contentId }) {
     likeComment(contentId, comment.id);
   }
 
-  // First letter of display name
   const initial = (comment.displayName || '?').charAt(0).toUpperCase();
 
   return (
@@ -80,7 +91,7 @@ function CommentRow({ comment, contentId }) {
           <Text style={styles.commentName}>{comment.displayName || 'Anonymous'}</Text>
           <Text style={styles.commentTime}>{timeAgo(comment.createdAt)}</Text>
         </View>
-        <Text style={styles.commentText}>{comment.text}</Text>
+        <CommentText text={comment.text || ''} />
         <TouchableOpacity onPress={handleLike} style={styles.commentLikeBtn} activeOpacity={0.7}>
           <Text style={[styles.commentLikeIcon, liked && styles.commentLikedIcon]}>
             {liked ? '♥' : '♡'}
@@ -96,6 +107,24 @@ function CommentRow({ comment, contentId }) {
   );
 }
 
+// ─── Tag suggestion row ───────────────────────────────────────────────────────
+function TagSuggestion({ user, onSelect }) {
+  const initial = (user.displayName || '?').charAt(0).toUpperCase();
+  return (
+    <TouchableOpacity
+      style={styles.suggestionRow}
+      onPress={() => onSelect(user)}
+      activeOpacity={0.7}
+    >
+      <View style={styles.suggestionAvatar}>
+        <Text style={styles.suggestionAvatarText}>{initial}</Text>
+      </View>
+      <Text style={styles.suggestionName}>{user.displayName}</Text>
+      <Text style={styles.suggestionAt}>@{user.displayName.replace(/\s+/g, '').toLowerCase()}</Text>
+    </TouchableOpacity>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function CommentsSheet({ visible, onClose, contentId, contentTitle }) {
   const [reactions, setReactions] = useState({ likes: 0, dislikes: 0 });
@@ -104,30 +133,96 @@ export default function CommentsSheet({ visible, onClose, contentId, contentTitl
   const [loadingComments, setLoadingComments] = useState(true);
   const [inputText, setInputText] = useState('');
   const [posting, setPosting] = useState(false);
+
+  // Mention state
+  const [mentionQuery, setMentionQuery]     = useState(null); // null = not searching
+  const [suggestions, setSuggestions]       = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [mentionStart, setMentionStart]     = useState(-1); // index of @ in inputText
+  const searchTimer                         = useRef(null);
+
   const inputRef = useRef(null);
 
   useEffect(() => {
     if (!visible || !contentId) return;
-
     setLoadingComments(true);
-
-    // Load user's existing reaction from AsyncStorage
     getUserReaction(contentId).then(setUserReaction);
-
-    // Subscribe to live reaction counts
     const unsubReactions = subscribeToReactions(contentId, setReactions);
-
-    // Subscribe to live comments
-    const unsubComments = subscribeToComments(contentId, (data) => {
+    const unsubComments  = subscribeToComments(contentId, (data) => {
       setComments(data);
       setLoadingComments(false);
     });
-
     return () => {
       unsubReactions();
       unsubComments();
     };
   }, [visible, contentId]);
+
+  // Reset when sheet closes
+  useEffect(() => {
+    if (!visible) {
+      setInputText('');
+      setMentionQuery(null);
+      setSuggestions([]);
+      setMentionStart(-1);
+    }
+  }, [visible]);
+
+  // Debounced user search whenever mentionQuery changes
+  useEffect(() => {
+    if (mentionQuery === null) {
+      setSuggestions([]);
+      return;
+    }
+    clearTimeout(searchTimer.current);
+    if (mentionQuery.length === 0) {
+      setSuggestions([]);
+      return;
+    }
+    setLoadingSuggestions(true);
+    searchTimer.current = setTimeout(async () => {
+      const results = await searchUsers(mentionQuery);
+      setSuggestions(results);
+      setLoadingSuggestions(false);
+    }, 250);
+    return () => clearTimeout(searchTimer.current);
+  }, [mentionQuery]);
+
+  // Detect @ trigger on every keystroke
+  function handleTextChange(text) {
+    setInputText(text);
+
+    // Find the last @ that hasn't been followed by a space
+    const cursorPos = text.length;
+    let atIdx = -1;
+    for (let i = cursorPos - 1; i >= 0; i--) {
+      if (text[i] === ' ' || text[i] === '\n') break; // space before @ — stop
+      if (text[i] === '@') { atIdx = i; break; }
+    }
+
+    if (atIdx !== -1) {
+      const query = text.slice(atIdx + 1); // text after @
+      setMentionStart(atIdx);
+      setMentionQuery(query);
+    } else {
+      setMentionQuery(null);
+      setMentionStart(-1);
+    }
+  }
+
+  // Insert selected username into the input, replacing the @query
+  function handleSelectSuggestion(user) {
+    Haptics.selectionAsync();
+    const tag = `@${user.displayName} `;
+    const before = inputText.slice(0, mentionStart);
+    const after  = inputText.slice(mentionStart + 1 + (mentionQuery?.length || 0));
+    const newText = before + tag + after;
+    setInputText(newText);
+    setMentionQuery(null);
+    setSuggestions([]);
+    setMentionStart(-1);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }
 
   async function handleReaction(type) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -142,6 +237,8 @@ export default function CommentsSheet({ visible, onClose, contentId, contentTitl
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setPosting(true);
     setInputText('');
+    setMentionQuery(null);
+    setSuggestions([]);
     inputRef.current?.blur();
     try {
       await postComment(contentId, text);
@@ -152,8 +249,9 @@ export default function CommentsSheet({ visible, onClose, contentId, contentTitl
     }
   }
 
-  const total = reactions.likes + reactions.dislikes;
+  const total   = reactions.likes + reactions.dislikes;
   const likePct = total > 0 ? Math.round((reactions.likes / total) * 100) : 50;
+  const showSuggestions = mentionQuery !== null && mentionQuery.length > 0;
 
   return (
     <Modal
@@ -187,9 +285,11 @@ export default function CommentsSheet({ visible, onClose, contentId, contentTitl
               onPress={() => handleReaction('like')}
               activeOpacity={0.75}
             >
-              <Text style={[styles.reactionIcon, userReaction === 'like' && styles.reactionIconLiked]}>
-                {userReaction === 'like' ? '▲' : '△'}
-              </Text>
+              <Ionicons
+                name={userReaction === 'like' ? 'chevron-up' : 'chevron-up-outline'}
+                size={16}
+                color={userReaction === 'like' ? colors.accentTeal : colors.textMuted}
+              />
               <Text style={[styles.reactionCount, userReaction === 'like' && { color: colors.accentTeal }]}>
                 {reactions.likes.toLocaleString()}
               </Text>
@@ -214,9 +314,11 @@ export default function CommentsSheet({ visible, onClose, contentId, contentTitl
               onPress={() => handleReaction('dislike')}
               activeOpacity={0.75}
             >
-              <Text style={[styles.reactionIcon, userReaction === 'dislike' && styles.reactionIconDisliked]}>
-                {userReaction === 'dislike' ? '▼' : '▽'}
-              </Text>
+              <Ionicons
+                name={userReaction === 'dislike' ? 'chevron-down' : 'chevron-down-outline'}
+                size={16}
+                color={userReaction === 'dislike' ? colors.neonPink : colors.textMuted}
+              />
               <Text style={[styles.reactionCount, userReaction === 'dislike' && { color: colors.neonPink }]}>
                 {reactions.dislikes.toLocaleString()}
               </Text>
@@ -260,21 +362,48 @@ export default function CommentsSheet({ visible, onClose, contentId, contentTitl
             />
           )}
 
+          {/* @ mention suggestions panel */}
+          {showSuggestions && (
+            <View style={styles.suggestionsPanel}>
+              {loadingSuggestions ? (
+                <View style={styles.suggestionsLoading}>
+                  <ActivityIndicator size="small" color={colors.accentTeal} />
+                  <Text style={styles.suggestionsLoadingText}>Searching users...</Text>
+                </View>
+              ) : suggestions.length === 0 ? (
+                <View style={styles.suggestionsLoading}>
+                  <Text style={styles.suggestionsLoadingText}>No users found for "@{mentionQuery}"</Text>
+                </View>
+              ) : (
+                suggestions.map(user => (
+                  <TagSuggestion key={user.uid} user={user} onSelect={handleSelectSuggestion} />
+                ))
+              )}
+            </View>
+          )}
+
           {/* Input row */}
           <View style={styles.inputRow}>
-            <TextInput
-              ref={inputRef}
-              style={styles.input}
-              placeholder="Add a comment..."
-              placeholderTextColor={colors.textMuted}
-              value={inputText}
-              onChangeText={setInputText}
-              multiline
-              maxLength={280}
-              selectionColor={colors.accentTeal}
-              returnKeyType="send"
-              onSubmitEditing={handlePost}
-            />
+            <View style={styles.inputWrap}>
+              <TextInput
+                ref={inputRef}
+                style={styles.input}
+                placeholder="Add a comment… type @ to tag someone"
+                placeholderTextColor={colors.textMuted}
+                value={inputText}
+                onChangeText={handleTextChange}
+                multiline
+                maxLength={280}
+                selectionColor={colors.accentTeal}
+                returnKeyType="send"
+                onSubmitEditing={handlePost}
+              />
+              {mentionQuery !== null && (
+                <View style={styles.mentionIndicator}>
+                  <Text style={styles.mentionIndicatorText}>@{mentionQuery}</Text>
+                </View>
+              )}
+            </View>
             <TouchableOpacity
               onPress={handlePost}
               style={[
@@ -338,13 +467,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.3,
   },
-  closeBtn: {
-    padding: 4,
-  },
-  closeBtnText: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
+  closeBtn: { padding: 4 },
+  closeBtnText: { color: colors.textMuted, fontSize: 14 },
 
   // Reactions
   reactionsRow: {
@@ -372,11 +496,8 @@ const styles = StyleSheet.create({
     borderColor: colors.neonPink,
     backgroundColor: 'rgba(232,48,90,0.08)',
   },
-  reactionIcon: {
-    color: colors.textMuted,
-    fontSize: 16,
-  },
-  reactionIconLiked: { color: colors.accentTeal },
+  reactionIcon:         { color: colors.textMuted, fontSize: 16 },
+  reactionIconLiked:    { color: colors.accentTeal },
   reactionIconDisliked: { color: colors.neonPink },
   reactionCount: {
     color: colors.textPrimary,
@@ -392,11 +513,7 @@ const styles = StyleSheet.create({
   },
 
   // Ratio bar
-  ratioWrap: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 6,
-  },
+  ratioWrap:    { flex: 1, alignItems: 'center', gap: 6 },
   ratioTrack: {
     width: '100%',
     height: 4,
@@ -405,14 +522,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: colors.border,
   },
-  ratioFillLike: {
-    height: '100%',
-    backgroundColor: colors.accentTeal,
-  },
-  ratioFillDislike: {
-    height: '100%',
-    backgroundColor: colors.neonPink,
-  },
+  ratioFillLike:    { height: '100%', backgroundColor: colors.accentTeal },
+  ratioFillDislike: { height: '100%', backgroundColor: colors.neonPink },
   ratioTotal: {
     color: colors.textMuted,
     fontSize: 9,
@@ -422,11 +533,7 @@ const styles = StyleSheet.create({
 
   divider: { height: 1, backgroundColor: colors.border, marginHorizontal: 16 },
 
-  // Comments label
-  commentsLabelRow: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
+  commentsLabelRow: { paddingHorizontal: 16, paddingVertical: 10 },
   commentsLabel: {
     color: colors.textMuted,
     fontSize: 9,
@@ -435,11 +542,8 @@ const styles = StyleSheet.create({
   },
 
   // List
-  commentList: { flex: 1 },
-  commentListContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
+  commentList:        { flex: 1 },
+  commentListContent: { paddingHorizontal: 16, paddingBottom: 8 },
   loadingWrap: {
     flex: 1,
     alignItems: 'center',
@@ -453,15 +557,8 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
     gap: 6,
   },
-  emptyText: {
-    color: colors.textPrimary,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  emptySubtext: {
-    color: colors.textMuted,
-    fontSize: 12,
-  },
+  emptyText:    { color: colors.textPrimary, fontSize: 14, fontWeight: '500' },
+  emptySubtext: { color: colors.textMuted, fontSize: 12 },
 
   // Comment rows
   commentRow: {
@@ -482,12 +579,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexShrink: 0,
   },
-  commentAvatarText: {
-    color: colors.accentTeal,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  commentBody: { flex: 1, gap: 4 },
+  commentAvatarText: { color: colors.accentTeal, fontSize: 13, fontWeight: '700' },
+  commentBody:       { flex: 1, gap: 4 },
   commentHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -499,17 +592,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.3,
   },
-  commentTime: {
-    color: colors.textMuted,
-    fontSize: 10,
-    fontWeight: '400',
-  },
+  commentTime: { color: colors.textMuted, fontSize: 10, fontWeight: '400' },
   commentText: {
     color: colors.textPrimary,
     fontSize: 13,
     fontWeight: '400',
     lineHeight: 19,
     opacity: 0.9,
+  },
+  mentionText: {
+    color: colors.accentTeal,
+    fontWeight: '600',
   },
   commentLikeBtn: {
     flexDirection: 'row',
@@ -518,15 +611,61 @@ const styles = StyleSheet.create({
     marginTop: 4,
     alignSelf: 'flex-start',
   },
-  commentLikeIcon: {
-    color: colors.textMuted,
-    fontSize: 13,
-  },
+  commentLikeIcon:  { color: colors.textMuted, fontSize: 13 },
   commentLikedIcon: { color: colors.accentTeal },
-  commentLikeCount: {
+  commentLikeCount: { color: colors.textMuted, fontSize: 11, fontWeight: '500' },
+
+  // @ suggestion panel (sits above input)
+  suggestionsPanel: {
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
+    maxHeight: 200,
+  },
+  suggestionsLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  suggestionsLoadingText: {
+    color: colors.textMuted,
+    fontSize: 12,
+  },
+  suggestionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  suggestionAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: colors.accentTeal + '22',
+    borderWidth: 1,
+    borderColor: colors.accentTeal + '55',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  suggestionAvatarText: {
+    color: colors.accentTeal,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  suggestionName: {
+    flex: 1,
+    color: colors.textPrimary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  suggestionAt: {
     color: colors.textMuted,
     fontSize: 11,
-    fontWeight: '500',
   },
 
   // Input
@@ -540,31 +679,43 @@ const styles = StyleSheet.create({
     gap: 10,
     backgroundColor: colors.surface,
   },
+  inputWrap: { flex: 1 },
   input: {
-    flex: 1,
     backgroundColor: colors.background,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 3,
+    borderRadius: 12,
     borderBottomColor: colors.accentTeal,
-    borderBottomWidth: 1,
+    borderBottomWidth: 1.5,
     paddingHorizontal: 12,
     paddingVertical: 10,
     color: colors.textPrimary,
     fontSize: 14,
     maxHeight: 90,
   },
+  mentionIndicator: {
+    marginTop: 4,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.accentTeal + '20',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  mentionIndicatorText: {
+    color: colors.accentTeal,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
   postBtn: {
     backgroundColor: colors.accentTeal,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 3,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  postBtnDisabled: {
-    opacity: 0.35,
-  },
+  postBtnDisabled: { opacity: 0.35 },
   postBtnText: {
     color: '#000',
     fontSize: 10,

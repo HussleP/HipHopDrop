@@ -7,25 +7,28 @@ import {
   StyleSheet,
   StatusBar,
   Share,
-  Linking,
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { isArticleSaved, saveArticle, unsaveArticle } from '../services/savedArticlesService';
 import { subscribeToReactions, getUserReaction, toggleReaction } from '../services/interactionsService';
+import { isReposted, toggleRepost } from '../services/repostService';
 import CommentsSheet from '../components/CommentsSheet';
 
 export default function ArticleDetailScreen({ route, navigation }) {
   const { article } = route.params;
-  const [saved, setSaved] = useState(false);
-  const [reactions, setReactions] = useState({ likes: 0, dislikes: 0 });
+  const [saved,        setSaved]        = useState(false);
+  const [reposted,     setReposted]     = useState(false);
+  const [reactions,    setReactions]    = useState({ likes: 0, dislikes: 0 });
   const [userReaction, setUserReaction] = useState(null);
   const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     isArticleSaved(article.id).then(setSaved);
+    isReposted(article.id).then(setReposted);
     getUserReaction(article.id).then(setUserReaction);
     const unsub = subscribeToReactions(article.id, setReactions);
     return unsub;
@@ -53,6 +56,21 @@ export default function ArticleDetailScreen({ route, navigation }) {
     }
   }
 
+  async function handleRepost() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const nowReposted = await toggleRepost({
+      id:         article.id,
+      type:       'article',
+      title:      article.title,
+      subtitle:   `${article.source} · ${article.timestamp}`,
+      imageUrl:   article.imageUrl,
+      imageColor: article.imageColor,
+      accentColor: '#E07B0A',
+      category:   article.category,
+    });
+    setReposted(nowReposted);
+  }
+
   async function handleReaction(type) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const next = userReaction === type ? null : type;
@@ -60,10 +78,14 @@ export default function ArticleDetailScreen({ route, navigation }) {
     await toggleReaction(article.id, type);
   }
 
-  async function handleReadFull() {
-    if (article.url) {
-      await Linking.openURL(article.url);
-    }
+  function handleReadFull() {
+    if (!article.url) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate('ArticleWebView', {
+      url:    article.url,
+      title:  article.title,
+      source: article.source,
+    });
   }
 
   return (
@@ -91,7 +113,7 @@ export default function ArticleDetailScreen({ route, navigation }) {
             style={styles.backBtn}
             activeOpacity={0.7}
           >
-            <Text style={styles.backArrow}>←</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
 
@@ -120,39 +142,66 @@ export default function ArticleDetailScreen({ route, navigation }) {
             <Text key={index} style={styles.bodyText}>{paragraph}</Text>
           ))}
 
-          <View style={styles.fadeOut} />
+          {/* Read full article CTA */}
+          {article.url ? (
+            <TouchableOpacity
+              style={styles.readFullCard}
+              onPress={handleReadFull}
+              activeOpacity={0.85}
+            >
+              <View style={styles.readFullCardInner}>
+                <Text style={styles.readFullCardEmoji}>📰</Text>
+                <View style={styles.readFullCardText}>
+                  <Text style={styles.readFullCardTitle}>Continue Reading</Text>
+                  <Text style={styles.readFullCardSource}>{article.source}</Text>
+                </View>
+                <Text style={styles.readFullCardArrow}>›</Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.fadeOut} />
+          )}
         </View>
       </ScrollView>
 
       {/* Bottom action row */}
       <View style={styles.bottomBar}>
-        {/* Like */}
-        <TouchableOpacity
-          style={[styles.reactionBtn, userReaction === 'like' && styles.reactionBtnLiked]}
-          onPress={() => handleReaction('like')}
-          activeOpacity={0.75}
-        >
-          <Text style={[styles.reactionIcon, userReaction === 'like' && { color: colors.accentTeal }]}>
-            {userReaction === 'like' ? '▲' : '△'}
-          </Text>
-          <Text style={[styles.reactionCount, userReaction === 'like' && { color: colors.accentTeal }]}>
-            {reactions.likes > 0 ? reactions.likes.toLocaleString() : ''}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Dislike */}
-        <TouchableOpacity
-          style={[styles.reactionBtn, userReaction === 'dislike' && styles.reactionBtnDisliked]}
-          onPress={() => handleReaction('dislike')}
-          activeOpacity={0.75}
-        >
-          <Text style={[styles.reactionIcon, userReaction === 'dislike' && { color: colors.neonPink }]}>
-            {userReaction === 'dislike' ? '▼' : '▽'}
-          </Text>
-          <Text style={[styles.reactionCount, userReaction === 'dislike' && { color: colors.neonPink }]}>
-            {reactions.dislikes > 0 ? reactions.dislikes.toLocaleString() : ''}
-          </Text>
-        </TouchableOpacity>
+        {/* Like / Dislike pill pair */}
+        <View style={styles.reactionGroup}>
+          <TouchableOpacity
+            style={styles.reactionBtn}
+            onPress={() => handleReaction('like')}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={userReaction === 'like' ? 'chevron-up' : 'chevron-up-outline'}
+              size={16}
+              color={userReaction === 'like' ? colors.accentTeal : colors.textMuted}
+            />
+            {reactions.likes > 0 && (
+              <Text style={[styles.reactionCount, userReaction === 'like' && { color: colors.accentTeal }]}>
+                {reactions.likes.toLocaleString()}
+              </Text>
+            )}
+          </TouchableOpacity>
+          <View style={styles.reactionDivider} />
+          <TouchableOpacity
+            style={styles.reactionBtn}
+            onPress={() => handleReaction('dislike')}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={userReaction === 'dislike' ? 'chevron-down' : 'chevron-down-outline'}
+              size={16}
+              color={userReaction === 'dislike' ? colors.neonPink : colors.textMuted}
+            />
+            {reactions.dislikes > 0 && (
+              <Text style={[styles.reactionCount, userReaction === 'dislike' && { color: colors.neonPink }]}>
+                {reactions.dislikes.toLocaleString()}
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
         {/* Comments */}
         <TouchableOpacity
@@ -160,21 +209,38 @@ export default function ArticleDetailScreen({ route, navigation }) {
           onPress={() => { Haptics.selectionAsync(); setShowComments(true); }}
           activeOpacity={0.7}
         >
-          <Text style={styles.actionIcon}>💬</Text>
-          <Text style={styles.actionLabel}>Comments</Text>
+          <Ionicons name="chatbubble-outline" size={18} color={colors.textMuted} />
+          <Text style={styles.actionLabel}>TALK</Text>
         </TouchableOpacity>
 
         {/* Save */}
         <TouchableOpacity style={styles.actionBtn} onPress={handleSave} activeOpacity={0.7}>
-          <Text style={[styles.actionIcon, saved && styles.savedIcon]}>{saved ? '♥' : '♡'}</Text>
-          <Text style={[styles.actionLabel, saved && styles.savedLabel]}>
-            {saved ? 'Saved' : 'Save'}
+          <Ionicons
+            name={saved ? 'bookmark' : 'bookmark-outline'}
+            size={18}
+            color={saved ? colors.accentTeal : colors.textMuted}
+          />
+          <Text style={[styles.actionLabel, saved && { color: colors.accentTeal }]}>
+            {saved ? 'SAVED' : 'SAVE'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Repost */}
+        <TouchableOpacity style={styles.actionBtn} onPress={handleRepost} activeOpacity={0.7}>
+          <Ionicons name="repeat" size={18} color={reposted ? colors.green : colors.textMuted} />
+          <Text style={[styles.actionLabel, reposted && { color: colors.green }]}>
+            {reposted ? 'POSTED' : 'REPOST'}
           </Text>
         </TouchableOpacity>
 
         {/* Read full */}
-        <TouchableOpacity style={styles.readFullBtn} onPress={handleReadFull} activeOpacity={0.85}>
-          <Text style={styles.readFullText}>Read</Text>
+        <TouchableOpacity
+          style={[styles.readFullBtn, !article.url && styles.readFullBtnDisabled]}
+          onPress={handleReadFull}
+          activeOpacity={0.85}
+          disabled={!article.url}
+        >
+          <Text style={styles.readFullText}>READ FULL</Text>
         </TouchableOpacity>
       </View>
 
@@ -258,56 +324,97 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   fadeOut: { height: 60 },
+  readFullCard: {
+    marginTop: 8,
+    marginBottom: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.accentTeal,
+    backgroundColor: colors.accentTeal + '0D',
+    overflow: 'hidden',
+  },
+  readFullCardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 12,
+  },
+  readFullCardEmoji: { fontSize: 24 },
+  readFullCardText:  { flex: 1 },
+  readFullCardTitle: {
+    color: colors.textPrimary,
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 3,
+  },
+  readFullCardSource: {
+    color: colors.accentTeal,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  readFullCardArrow: {
+    color: colors.accentTeal,
+    fontSize: 24,
+    fontWeight: '300',
+  },
   bottomBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: colors.surface,
+    backgroundColor: '#070605',
     borderTopWidth: 1,
-    borderTopColor: colors.border,
-    gap: 4,
+    borderTopColor: '#1C1814',
+    gap: 2,
+  },
+  reactionGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2D2520',
+    borderRadius: 22,
+    overflow: 'hidden',
+    marginRight: 6,
   },
   reactionBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
     paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 1,
-    minWidth: 42,
+    paddingVertical: 9,
   },
-  reactionBtnLiked: {
-    borderColor: colors.accentTeal,
-    backgroundColor: 'rgba(224,123,10,0.08)',
+  reactionDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#2D2520',
   },
-  reactionBtnDisliked: {
-    borderColor: colors.neonPink,
-    backgroundColor: 'rgba(232,48,90,0.08)',
-  },
-  reactionIcon: { color: colors.textMuted, fontSize: 14 },
   reactionCount: { color: colors.textMuted, fontSize: 10, fontWeight: '600' },
   actionBtn: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 8,
-    paddingVertical: 7,
-    gap: 2,
-  },
-  actionIcon: { color: colors.textMuted, fontSize: 16 },
-  savedIcon: { color: colors.accentTeal },
-  actionLabel: { color: colors.textMuted, fontSize: 9, fontWeight: '600', letterSpacing: 0.5 },
-  savedLabel: { color: colors.accentTeal },
-  readFullBtn: {
+    paddingVertical: 8,
+    gap: 3,
     flex: 1,
+  },
+  actionLabel: {
+    color: colors.textMuted,
+    fontSize: 7,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+  },
+  readFullBtn: {
     backgroundColor: colors.accentTeal,
-    paddingVertical: 13,
-    borderRadius: 3,
+    paddingVertical: 11,
+    paddingHorizontal: 14,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 4,
   },
-  readFullText: { color: '#000', fontSize: 10, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' },
+  readFullBtnDisabled: {
+    opacity: 0.35,
+  },
+  readFullText: { color: '#000', fontSize: 9, fontWeight: '900', letterSpacing: 2 },
 });

@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
 export default function UndergroundArtistScreen({ route, navigation }) {
@@ -22,14 +24,14 @@ export default function UndergroundArtistScreen({ route, navigation }) {
         {/* Hero */}
         <View style={[styles.hero, { backgroundColor: artist.colorBg }]}>
           <TouchableOpacity onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); navigation.goBack(); }} style={styles.backBtn}>
-            <Text style={styles.backArrow}>←</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
           <View style={styles.heroContent}>
             <View style={styles.undergroundBadge}>
-              <Text style={styles.undergroundBadgeText}>🔥 UNDERGROUND</Text>
+              <Text style={styles.undergroundBadgeText}>UNDERGROUND</Text>
             </View>
             <Text style={styles.artistName}>{artist.name}</Text>
-            <Text style={styles.location}>📍 {artist.location}</Text>
+            <Text style={styles.location}>{artist.location}</Text>
             <View style={styles.tagsRow}>
               {artist.tags.map(tag => (
                 <View key={tag} style={[styles.tag, { borderColor: artist.accentColor }]}>
@@ -121,7 +123,13 @@ export default function UndergroundArtistScreen({ route, navigation }) {
           <TouchableOpacity
             style={[styles.supportBtn, { backgroundColor: artist.accentColor }]}
             activeOpacity={0.85}
-            onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              const query = encodeURIComponent(artist.name);
+              const spotifyUrl = `spotify:search:${artist.name}`;
+              const webUrl = `https://open.spotify.com/search/${query}`;
+              Linking.openURL(spotifyUrl).catch(() => Linking.openURL(webUrl));
+            }}
           >
             <Text style={styles.supportBtnText}>🎵  Listen Now</Text>
           </TouchableOpacity>

@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { deleteUser } from 'firebase/auth';
 import { doc, deleteDoc, collection, getDocs, writeBatch } from 'firebase/firestore';
 import { db, auth } from '../services/firebase';
@@ -83,7 +84,7 @@ export default function AboutScreen({ navigation }) {
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back} activeOpacity={0.7}>
-          <Text style={styles.backText}>←</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>ABOUT</Text>
         <View style={{ width: 40 }} />

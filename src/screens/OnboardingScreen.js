@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
@@ -17,31 +18,31 @@ import { colors } from '../theme/colors';
 const { width } = Dimensions.get('window');
 
 const GENRES = [
-  { id: 'trap',        label: 'Trap',         icon: '🔥' },
-  { id: 'drill',       label: 'Drill',        icon: '🌀' },
-  { id: 'boom_bap',    label: 'Boom Bap',     icon: '🎧' },
-  { id: 'west_coast',  label: 'West Coast',   icon: '🌴' },
-  { id: 'east_coast',  label: 'East Coast',   icon: '🏙' },
-  { id: 'uk_rap',      label: 'UK Rap',       icon: '🇬🇧' },
-  { id: 'conscious',   label: 'Conscious',    icon: '✊' },
-  { id: 'melodic',     label: 'Melodic',      icon: '🎵' },
-  { id: 'old_school',  label: 'Old School',   icon: '📀' },
-  { id: 'underground', label: 'Underground',  icon: '🌑' },
+  { id: 'trap',        label: 'Trap',         icon: 'flame-outline' },
+  { id: 'drill',       label: 'Drill',        icon: 'radio-outline' },
+  { id: 'boom_bap',    label: 'Boom Bap',     icon: 'headset-outline' },
+  { id: 'west_coast',  label: 'West Coast',   icon: 'partly-sunny-outline' },
+  { id: 'east_coast',  label: 'East Coast',   icon: 'business-outline' },
+  { id: 'uk_rap',      label: 'UK Rap',       icon: 'globe-outline' },
+  { id: 'conscious',   label: 'Conscious',    icon: 'heart-outline' },
+  { id: 'melodic',     label: 'Melodic',      icon: 'musical-note-outline' },
+  { id: 'old_school',  label: 'Old School',   icon: 'time-outline' },
+  { id: 'underground', label: 'Underground',  icon: 'moon-outline' },
 ];
 
 const ARTISTS = [
-  { id: 'kendrick', name: 'Kendrick Lamar',     genre: 'West Coast',  emoji: '👑' },
-  { id: 'drake',    name: 'Drake',              genre: 'Melodic',     emoji: '🦉' },
-  { id: 'jcole',    name: 'J. Cole',            genre: 'Conscious',   emoji: '🌻' },
-  { id: 'travis',   name: 'Travis Scott',       genre: 'Trap',        emoji: '🌵' },
-  { id: 'future',   name: 'Future',             genre: 'Trap',        emoji: '🔮' },
-  { id: 'carti',    name: 'Playboi Carti',      genre: 'Trap',        emoji: '🩸' },
-  { id: 'tyler',    name: 'Tyler, the Creator', genre: 'Conscious',   emoji: '🌹' },
-  { id: 'gunna',    name: 'Gunna',              genre: 'Trap',        emoji: '💎' },
-  { id: 'lil_baby', name: 'Lil Baby',           genre: 'Trap',        emoji: '🍼' },
-  { id: 'nicki',    name: 'Nicki Minaj',        genre: 'East Coast',  emoji: '💅' },
-  { id: 'doja',     name: 'Doja Cat',           genre: 'Melodic',     emoji: '🐱' },
-  { id: 'denzel',   name: 'Denzel Curry',       genre: 'Underground', emoji: '🔱' },
+  { id: 'kendrick', name: 'Kendrick Lamar',     genre: 'West Coast'  },
+  { id: 'drake',    name: 'Drake',              genre: 'Melodic'     },
+  { id: 'jcole',    name: 'J. Cole',            genre: 'Conscious'   },
+  { id: 'travis',   name: 'Travis Scott',       genre: 'Trap'        },
+  { id: 'future',   name: 'Future',             genre: 'Trap'        },
+  { id: 'carti',    name: 'Playboi Carti',      genre: 'Trap'        },
+  { id: 'tyler',    name: 'Tyler, the Creator', genre: 'Conscious'   },
+  { id: 'gunna',    name: 'Gunna',              genre: 'Trap'        },
+  { id: 'lil_baby', name: 'Lil Baby',           genre: 'Trap'        },
+  { id: 'nicki',    name: 'Nicki Minaj',        genre: 'East Coast'  },
+  { id: 'doja',     name: 'Doja Cat',           genre: 'Melodic'     },
+  { id: 'denzel',   name: 'Denzel Curry',       genre: 'Underground' },
 ];
 
 const TOTAL_STEPS = 4;
@@ -134,20 +135,20 @@ function WelcomeStep({ onNext }) {
 
       <View style={styles.welcomeFeatures}>
         {[
-          ['🔥', 'Breaking drops & releases'],
-          ['🗞️', 'Culture news & beef'],
-          ['🎬', 'Music videos & exclusives'],
-          ['🔔', 'Real-time drop alerts'],
+          ['flash-outline',         'Breaking drops & releases'],
+          ['newspaper-outline',     'Culture news & beef'],
+          ['videocam-outline',      'Music videos & exclusives'],
+          ['notifications-outline', 'Real-time drop alerts'],
         ].map(([icon, text]) => (
           <View key={text} style={styles.featureRow}>
-            <Text style={styles.featureIcon}>{icon}</Text>
+            <Ionicons name={icon} size={20} color={colors.accentTeal} style={styles.featureIcon} />
             <Text style={styles.featureText}>{text}</Text>
           </View>
         ))}
       </View>
 
       <TouchableOpacity style={styles.primaryBtn} onPress={onNext} activeOpacity={0.8}>
-        <Text style={styles.primaryBtnText}>LET'S GO →</Text>
+        <Text style={styles.primaryBtnText}>LET'S GO</Text>
       </TouchableOpacity>
     </View>
   );
@@ -172,7 +173,7 @@ function GenreStep({ selectedGenres, onToggle, onNext }) {
               onPress={() => onToggle(g.id)}
               activeOpacity={0.75}
             >
-              <Text style={styles.genreChipIcon}>{g.icon}</Text>
+              <Ionicons name={g.icon} size={13} color={active ? colors.accentTeal : colors.textMuted} />
               <Text style={[styles.genreChipText, active && styles.genreChipTextActive]}>
                 {g.label}
               </Text>
@@ -215,7 +216,7 @@ function ArtistStep({ followedArtists, onToggle, onNext }) {
                 activeOpacity={0.75}
               >
                 <View style={[styles.artistAvatarWrap, active && styles.artistAvatarWrapActive]}>
-                  <Text style={styles.artistEmoji}>{a.emoji}</Text>
+                  <Text style={styles.artistInitial}>{a.name[0]}</Text>
                 </View>
                 <Text
                   style={[styles.artistName, active && styles.artistNameActive]}
@@ -226,7 +227,7 @@ function ArtistStep({ followedArtists, onToggle, onNext }) {
                 <Text style={styles.artistGenre}>{a.genre}</Text>
                 {active && (
                   <View style={styles.artistCheck}>
-                    <Text style={styles.artistCheckText}>✓</Text>
+                    <Ionicons name="checkmark" size={9} color="#000" />
                   </View>
                 )}
               </TouchableOpacity>
@@ -254,7 +255,7 @@ function ArtistStep({ followedArtists, onToggle, onNext }) {
 function FinishStep({ onFinish }) {
   return (
     <View style={[styles.stepWrap, styles.finishWrap]}>
-      <Text style={styles.finishEmoji}>🎤</Text>
+      <Ionicons name="mic-outline" size={56} color={colors.accentTeal} style={{ marginBottom: 20 }} />
       <Text style={styles.finishTitle}>YOU'RE IN.</Text>
       <Text style={styles.finishSub}>
         Your personalized hip-hop feed is ready.{'\n'}Stay first. Stay informed.
@@ -262,21 +263,21 @@ function FinishStep({ onFinish }) {
 
       <View style={styles.finishCard}>
         {[
-          ['🔥', 'Breaking drops & releases'],
-          ['🗞️', 'Culture news & beef'],
-          ['🎬', 'Music videos & exclusives'],
-          ['🔔', 'Real-time drop alerts'],
-          ['💬', 'Community comments & polls'],
+          ['flash-outline',         'Breaking drops & releases'],
+          ['newspaper-outline',     'Culture news & beef'],
+          ['videocam-outline',      'Music videos & exclusives'],
+          ['notifications-outline', 'Real-time drop alerts'],
+          ['chatbubble-outline',    'Community comments & polls'],
         ].map(([icon, text]) => (
           <View key={text} style={styles.featureRow}>
-            <Text style={styles.featureIcon}>{icon}</Text>
+            <Ionicons name={icon} size={20} color={colors.accentTeal} style={styles.featureIcon} />
             <Text style={styles.featureText}>{text}</Text>
           </View>
         ))}
       </View>
 
       <TouchableOpacity style={styles.primaryBtn} onPress={onFinish} activeOpacity={0.8}>
-        <Text style={styles.primaryBtnText}>ENTER THE DROP ▶</Text>
+        <Text style={styles.primaryBtnText}>ENTER THE DROP</Text>
       </TouchableOpacity>
     </View>
   );
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
 
   // Feature rows (welcome + finish)
   featureRow:  { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  featureIcon: { fontSize: 20, width: 28, textAlign: 'center' },
+  featureIcon: { width: 28, textAlign: 'center' },
   featureText: {
     color: colors.textPrimary,
     fontSize: 13,
@@ -407,7 +408,6 @@ const styles = StyleSheet.create({
     borderColor: colors.accentTeal,
     backgroundColor: 'rgba(224,123,10,0.1)',
   },
-  genreChipIcon:         { fontSize: 14 },
   genreChipText: {
     color: colors.textMuted,
     fontSize: 12,
@@ -450,7 +450,11 @@ const styles = StyleSheet.create({
   artistAvatarWrapActive: {
     backgroundColor: 'rgba(224,123,10,0.15)',
   },
-  artistEmoji: { fontSize: 24 },
+  artistInitial: {
+    color: colors.textPrimary,
+    fontSize: 20,
+    fontWeight: '800',
+  },
   artistName: {
     color: colors.textMuted,
     fontSize: 10,
@@ -478,11 +482,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  artistCheckText: { color: '#000', fontSize: 9, fontWeight: '900' },
-
   // Finish
   finishWrap: { justifyContent: 'center', alignItems: 'center', paddingTop: 0 },
-  finishEmoji: { fontSize: 64, marginBottom: 20 },
   finishTitle: {
     color: colors.textPrimary,
     fontSize: 38,

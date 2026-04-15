@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
 const CATEGORIES = [
@@ -17,35 +18,35 @@ const CATEGORIES = [
     id: 'tees',
     label: 'Tees & Hoodies',
     description: 'T-shirts, hoodies, crewnecks',
-    emoji: '👕',
+    icon: 'shirt-outline',
     color: colors.amber,
   },
   {
     id: 'vinyl',
     label: 'Vinyl & CDs',
     description: 'Records, CDs, cassettes',
-    emoji: '💿',
+    icon: 'disc-outline',
     color: colors.purple,
   },
   {
     id: 'hats',
     label: 'Hats & Accessories',
     description: 'Caps, beanies, bags',
-    emoji: '🧢',
+    icon: 'glasses-outline',
     color: colors.teal,
   },
   {
     id: 'posters',
     label: 'Posters & Art Prints',
     description: 'Signed & unsigned prints',
-    emoji: '🖼️',
+    icon: 'image-outline',
     color: colors.coral,
   },
   {
     id: 'boxsets',
     label: 'Limited Box Sets',
     description: 'Collector bundles & exclusives',
-    emoji: '📦',
+    icon: 'cube-outline',
     color: colors.accentTeal,
   },
 ];
@@ -98,7 +99,7 @@ export default function DropAlertsScreen({ navigation }) {
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} activeOpacity={0.7}>
-          <Text style={styles.backArrow}>←</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Drop Alerts</Text>
         <View style={{ width: 38 }} />
@@ -121,7 +122,7 @@ export default function DropAlertsScreen({ navigation }) {
               ]}
             >
               <View style={[styles.iconCircle, { backgroundColor: cat.color + '22' }]}>
-                <Text style={styles.iconEmoji}>{cat.emoji}</Text>
+                <Ionicons name={cat.icon} size={20} color={cat.color} />
               </View>
               <View style={styles.toggleInfo}>
                 <Text style={styles.toggleLabel}>{cat.label}</Text>
@@ -254,9 +255,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  iconEmoji: {
-    fontSize: 20,
   },
   toggleInfo: {
     flex: 1,

@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { subscribeToReactions, getUserReaction, toggleReaction } from '../services/interactionsService';
+import { isReposted, toggleRepost } from '../services/repostService';
 import CommentsSheet from './CommentsSheet';
 
 function getPercent(votes, total) {
@@ -38,9 +40,10 @@ export default function PollCard({ poll }) {
     ['A', 'B', 'C', 'D'].forEach(k => { obj[k] = new Animated.Value(0); });
     return obj;
   });
-  const [reactions, setReactions] = useState({ likes: 0, dislikes: 0 });
+  const [reactions,    setReactions]    = useState({ likes: 0, dislikes: 0 });
   const [userReaction, setUserReaction] = useState(null);
   const [showComments, setShowComments] = useState(false);
+  const [reposted,     setReposted]     = useState(false);
 
   const storageKey = `poll_vote_${poll.id}`;
 
@@ -52,6 +55,7 @@ export default function PollCard({ poll }) {
       }
     });
     getUserReaction(poll.id).then(setUserReaction);
+    isReposted(poll.id).then(setReposted);
     const unsub = subscribeToReactions(poll.id, setReactions);
     return unsub;
   }, []);
@@ -63,14 +67,17 @@ export default function PollCard({ poll }) {
     animateBars(initial, total);
   }
 
-  function buildVotes(votedKey) {
+  function buildVotes(newVote, prevVote) {
     const base = {
       A: poll.optionA?.votes || 0,
       B: poll.optionB?.votes || 0,
       C: poll.optionC?.votes || 0,
       D: poll.optionD?.votes || 0,
     };
-    if (votedKey) base[votedKey] = (base[votedKey] || 0) + 1;
+    // Add new vote
+    if (newVote) base[newVote] = (base[newVote] || 0) + 1;
+    // Remove old vote when changing
+    if (prevVote && prevVote !== newVote) base[prevVote] = Math.max(0, (base[prevVote] || 0) - 1);
     return base;
   }
 
@@ -78,7 +85,7 @@ export default function PollCard({ poll }) {
     const animations = Object.keys(votes).map(key =>
       Animated.timing(anims[key], {
         toValue: getPercent(votes[key], total),
-        duration: 600,
+        duration: 500,
         useNativeDriver: false,
       })
     );
@@ -86,10 +93,12 @@ export default function PollCard({ poll }) {
   }
 
   async function handleVote(option) {
-    if (voted) return;
+    // Tapping the same option a second time does nothing
+    if (voted === option) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    const updated = buildVotes(option);
-    const total = Object.values(updated).reduce((a, b) => a + b, 0);
+    const prevVote = voted;
+    const updated  = buildVotes(option, prevVote);
+    const total    = Object.values(updated).reduce((a, b) => a + b, 0);
     setVoted(option);
     setLocalVotes(updated);
     animateBars(updated, total);
@@ -159,7 +168,7 @@ export default function PollCard({ poll }) {
           poll.type === 'awards' && styles.awardsBadge,
           poll.type === 'versus' && styles.versusBadge]}>
           <Text style={styles.typeBadgeText}>
-            {poll.type === 'beef' ? '🔥 BEEF' : poll.type === 'awards' ? '🏆 AWARDS' : '⚔️ VERSUS'}
+            {poll.type === 'beef' ? 'BEEF' : poll.type === 'awards' ? 'AWARDS' : 'VERSUS'}
           </Text>
         </View>
         {voted && (
@@ -189,7 +198,6 @@ export default function PollCard({ poll }) {
                 ]}
                 onPress={() => handleVote(opt.key)}
                 activeOpacity={0.8}
-                disabled={!!voted}
               >
                 <Text style={styles.optionLabel} numberOfLines={2}>{opt.label}</Text>
                 {opt.sublabel && <Text style={styles.optionSublabel}>{opt.sublabel}</Text>}
@@ -228,7 +236,6 @@ export default function PollCard({ poll }) {
                 ]}
                 onPress={() => handleVote(opt.key)}
                 activeOpacity={0.8}
-                disabled={!!voted}
               >
                 <View style={styles.multiOptionRow}>
                   <View style={[styles.optionDot, { backgroundColor: optionColors[i] }]} />
@@ -255,37 +262,42 @@ export default function PollCard({ poll }) {
 
       {/* Footer row */}
       <View style={styles.footer}>
-        {/* Like */}
-        <TouchableOpacity
-          style={[styles.reactionBtn, userReaction === 'like' && styles.reactionBtnLiked]}
-          onPress={() => handleReaction('like')}
-          activeOpacity={0.75}
-        >
-          <Text style={[styles.reactionIcon, userReaction === 'like' && { color: colors.accentTeal }]}>
-            {userReaction === 'like' ? '▲' : '△'}
-          </Text>
-          {reactions.likes > 0 && (
-            <Text style={[styles.reactionCount, userReaction === 'like' && { color: colors.accentTeal }]}>
-              {reactions.likes}
-            </Text>
-          )}
-        </TouchableOpacity>
-
-        {/* Dislike */}
-        <TouchableOpacity
-          style={[styles.reactionBtn, userReaction === 'dislike' && styles.reactionBtnDisliked]}
-          onPress={() => handleReaction('dislike')}
-          activeOpacity={0.75}
-        >
-          <Text style={[styles.reactionIcon, userReaction === 'dislike' && { color: colors.neonPink }]}>
-            {userReaction === 'dislike' ? '▼' : '▽'}
-          </Text>
-          {reactions.dislikes > 0 && (
-            <Text style={[styles.reactionCount, userReaction === 'dislike' && { color: colors.neonPink }]}>
-              {reactions.dislikes}
-            </Text>
-          )}
-        </TouchableOpacity>
+        {/* Like / Dislike pill pair */}
+        <View style={styles.reactionGroup}>
+          <TouchableOpacity
+            style={styles.reactionBtn}
+            onPress={() => handleReaction('like')}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={userReaction === 'like' ? 'chevron-up' : 'chevron-up-outline'}
+              size={14}
+              color={userReaction === 'like' ? colors.accentTeal : colors.textMuted}
+            />
+            {reactions.likes > 0 && (
+              <Text style={[styles.reactionCount, userReaction === 'like' && { color: colors.accentTeal }]}>
+                {reactions.likes}
+              </Text>
+            )}
+          </TouchableOpacity>
+          <View style={styles.reactionDivider} />
+          <TouchableOpacity
+            style={styles.reactionBtn}
+            onPress={() => handleReaction('dislike')}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={userReaction === 'dislike' ? 'chevron-down' : 'chevron-down-outline'}
+              size={14}
+              color={userReaction === 'dislike' ? colors.neonPink : colors.textMuted}
+            />
+            {reactions.dislikes > 0 && (
+              <Text style={[styles.reactionCount, userReaction === 'dislike' && { color: colors.neonPink }]}>
+                {reactions.dislikes}
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
         {/* Vote count or prompt */}
         <Text style={styles.votePrompt}>
@@ -300,13 +312,33 @@ export default function PollCard({ poll }) {
           onPress={() => { Haptics.selectionAsync(); setShowComments(true); }}
           activeOpacity={0.7}
         >
-          <Text style={styles.footerIconText}>💬</Text>
+          <Ionicons name="chatbubble-outline" size={17} color={colors.textMuted} />
+        </TouchableOpacity>
+
+        {/* Repost */}
+        <TouchableOpacity
+          onPress={async () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            const now = await toggleRepost({
+              id:         poll.id,
+              type:       'poll',
+              title:      poll.question,
+              subtitle:   poll.subtitle,
+              accentColor: '#E07B0A',
+              category:   poll.type,
+            });
+            setReposted(now);
+          }}
+          style={styles.footerIconBtn}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="repeat" size={17} color={reposted ? colors.green : colors.textMuted} />
         </TouchableOpacity>
 
         {/* Share */}
         <TouchableOpacity onPress={handleShare} style={styles.shareBtn} activeOpacity={0.7}>
-          <Text style={styles.shareIcon}>↑</Text>
-          <Text style={styles.shareLabel}>Share</Text>
+          <Ionicons name="arrow-redo-outline" size={14} color={colors.accentTeal} />
+          <Text style={styles.shareLabel}>SHARE</Text>
         </TouchableOpacity>
       </View>
 
@@ -474,33 +506,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginTop: 12,
-    paddingTop: 10,
+    marginTop: 14,
+    paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: '#1C1814',
+  },
+  reactionGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2D2520',
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginRight: 2,
   },
   reactionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
     paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 2,
-    borderWidth: 1,
-    borderColor: colors.border,
+    paddingVertical: 6,
   },
-  reactionBtnLiked: {
-    borderColor: colors.accentTeal,
-    backgroundColor: 'rgba(224,123,10,0.08)',
-  },
-  reactionBtnDisliked: {
-    borderColor: colors.neonPink,
-    backgroundColor: 'rgba(232,48,90,0.08)',
-  },
-  reactionIcon: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+  reactionDivider: {
+    width: 1,
+    height: 18,
+    backgroundColor: '#2D2520',
   },
   reactionCount: {
     color: colors.textMuted,
@@ -515,32 +545,22 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   footerIconBtn: {
-    padding: 4,
-  },
-  footerIconText: {
-    fontSize: 14,
+    padding: 6,
   },
   shareBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 2,
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  shareIcon: {
-    color: colors.accentTeal,
-    fontSize: 12,
-    fontWeight: '700',
+    borderColor: '#2D2520',
   },
   shareLabel: {
     color: colors.accentTeal,
-    fontSize: 9,
-    fontWeight: '700',
+    fontSize: 8,
+    fontWeight: '800',
     letterSpacing: 1.5,
-    textTransform: 'uppercase',
   },
 });

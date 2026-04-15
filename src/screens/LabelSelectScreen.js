@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { LABELS } from '../data/labels';
 
@@ -56,7 +57,7 @@ export default function LabelSelectScreen({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back} activeOpacity={0.7}>
-          <Text style={styles.backText}>←</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>CLAIM YOUR LABEL</Text>
         <TouchableOpacity onPress={handleClear} style={styles.clearBtn} activeOpacity={0.7}>

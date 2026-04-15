@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
 function daysLabel(album) {
@@ -47,7 +48,7 @@ export default function PosthumousDetailScreen({ route, navigation }) {
             }}
             style={styles.backBtn}
           >
-            <Text style={styles.backArrow}>←</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
 
           <View style={styles.heroInner}>
@@ -59,7 +60,7 @@ export default function PosthumousDetailScreen({ route, navigation }) {
             {/* Badge */}
             <View style={[styles.legacyBadge, { borderColor: album.accentColor }]}>
               <Text style={[styles.legacyBadgeText, { color: album.accentColor }]}>
-                ✦ LEGACY VAULT
+                LEGACY VAULT
               </Text>
             </View>
 
@@ -108,7 +109,7 @@ export default function PosthumousDetailScreen({ route, navigation }) {
             >
               <Text style={styles.sectionTitle}>Tracklist</Text>
               <Text style={[styles.tracklistToggle, { color: album.accentColor }]}>
-                {tracksExpanded ? '▲ Hide' : '▼ Show all'}
+                {tracksExpanded ? 'Hide' : 'Show all'}
               </Text>
             </TouchableOpacity>
             {(tracksExpanded ? album.tracks : album.tracks.slice(0, 5)).map((track, i) => (
@@ -128,7 +129,7 @@ export default function PosthumousDetailScreen({ route, navigation }) {
 
           {/* Legacy */}
           <View style={[styles.legacyCard, { borderColor: album.accentColor, backgroundColor: album.colorBg }]}>
-            <Text style={[styles.legacyTitle, { color: album.accentColor }]}>✦ LEGACY</Text>
+            <Text style={[styles.legacyTitle, { color: album.accentColor }]}>LEGACY</Text>
             <Text style={styles.legacyText}>{album.legacy}</Text>
           </View>
 

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { getSavedArticles, unsaveArticle } from '../services/savedArticlesService';
 
@@ -36,7 +37,7 @@ export default function SavedArticlesScreen({ navigation }) {
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={styles.backArrow}>←</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Saved Articles</Text>
         <View style={{ width: 38 }} />

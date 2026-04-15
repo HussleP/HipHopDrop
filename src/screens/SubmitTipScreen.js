@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -19,10 +20,10 @@ import { getCurrentUser } from '../services/authService';
 import { colors } from '../theme/colors';
 
 const CATEGORIES = [
-  { id: 'tip',      label: 'News Tip',  icon: '🗞️', desc: 'Breaking story or insider info'  },
-  { id: 'sighting', label: 'Sighting',  icon: '📍', desc: 'Spotted an artist somewhere'      },
-  { id: 'leak',     label: 'Leak',      icon: '💧', desc: 'Unreleased music or merch'        },
-  { id: 'event',    label: 'Event',     icon: '🎤', desc: 'Upcoming show or appearance'      },
+  { id: 'tip',      label: 'News Tip',  icon: 'newspaper-outline',  desc: 'Breaking story or insider info'  },
+  { id: 'sighting', label: 'Sighting',  icon: 'location-outline',   desc: 'Spotted an artist somewhere'      },
+  { id: 'leak',     label: 'Leak',      icon: 'water-outline',      desc: 'Unreleased music or merch'        },
+  { id: 'event',    label: 'Event',     icon: 'mic-outline',        desc: 'Upcoming show or appearance'      },
 ];
 
 export default function SubmitTipScreen({ navigation }) {
@@ -66,7 +67,7 @@ export default function SubmitTipScreen({ navigation }) {
       <SafeAreaView style={styles.safe}>
         <StatusBar barStyle="light-content" />
         <View style={styles.successWrap}>
-          <Text style={styles.successEmoji}>📬</Text>
+          <Ionicons name="checkmark-circle-outline" size={56} color={colors.accentTeal} style={{ marginBottom: 16 }} />
           <Text style={styles.successTitle}>TIP RECEIVED</Text>
           <Text style={styles.successSub}>
             Our team will review your submission.{'\n'}Thanks for keeping the culture honest.
@@ -89,7 +90,7 @@ export default function SubmitTipScreen({ navigation }) {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerBack} activeOpacity={0.7}>
-            <Text style={styles.headerBackArrow}>←</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>SUBMIT TIP</Text>
           <View style={{ width: 40 }} />
@@ -113,7 +114,7 @@ export default function SubmitTipScreen({ navigation }) {
                   onPress={() => { Haptics.selectionAsync(); setCategory(cat.id); }}
                   activeOpacity={0.75}
                 >
-                  <Text style={styles.categoryIcon}>{cat.icon}</Text>
+                  <Ionicons name={cat.icon} size={22} color={active ? colors.accentTeal : colors.textMuted} />
                   <Text style={[styles.categoryLabel, active && styles.categoryLabelActive]}>
                     {cat.label}
                   </Text>
@@ -209,7 +210,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   headerBack:       { width: 40, height: 40, justifyContent: 'center' },
-  headerBackArrow:  { color: colors.textPrimary, fontSize: 20 },
   headerTitle: {
     color: colors.textPrimary,
     fontSize: 13,
@@ -251,7 +251,6 @@ const styles = StyleSheet.create({
     borderColor: colors.accentTeal,
     backgroundColor: 'rgba(224,123,10,0.06)',
   },
-  categoryIcon:  { fontSize: 22, marginBottom: 8 },
   categoryLabel: {
     color: colors.textMuted,
     fontSize: 12,
@@ -345,7 +344,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 32,
   },
-  successEmoji: { fontSize: 64, marginBottom: 24 },
   successTitle: {
     color: colors.textPrimary,
     fontSize: 30,

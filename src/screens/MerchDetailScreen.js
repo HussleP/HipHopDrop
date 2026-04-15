@@ -8,6 +8,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
 export default function MerchDetailScreen({ route, navigation }) {
@@ -25,7 +26,7 @@ export default function MerchDetailScreen({ route, navigation }) {
             style={styles.backBtn}
             activeOpacity={0.7}
           >
-            <Text style={styles.backArrow}>←</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
           {isLive ? (
             <View style={styles.liveOverlay}>

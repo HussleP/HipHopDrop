@@ -3,6 +3,7 @@ import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
 const LAST_UPDATED  = 'April 13, 2025';
@@ -75,7 +76,7 @@ export default function TermsScreen({ navigation }) {
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back} activeOpacity={0.7}>
-          <Text style={styles.backText}>←</Text>
+          <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>TERMS OF SERVICE</Text>
         <View style={{ width: 40 }} />

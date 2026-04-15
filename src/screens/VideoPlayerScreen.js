@@ -12,10 +12,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import YoutubeIframe from 'react-native-youtube-iframe';
 import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
-import { musicVideos } from '../data/mockData';
 import CommentsSheet from '../components/CommentsSheet';
 import { subscribeToReactions, getUserReaction, toggleReaction } from '../services/interactionsService';
+import { isReposted, toggleRepost } from '../services/repostService';
 import { useFocusEffect } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
@@ -27,7 +28,7 @@ function RelatedVideoCard({ video, onPress }) {
       <View style={styles.relatedThumbWrap}>
         <View style={styles.relatedThumb}>
           {/* Use colored background as placeholder — actual thumbnail via Image */}
-          <Text style={styles.relatedPlayIcon}>▶</Text>
+          <Ionicons name="play" size={16} color={colors.textMuted} />
         </View>
         <View style={styles.relatedDuration}>
           <Text style={styles.relatedDurationText}>{video.duration}</Text>
@@ -43,17 +44,19 @@ function RelatedVideoCard({ video, onPress }) {
 }
 
 export default function VideoPlayerScreen({ route, navigation }) {
-  const { video } = route.params;
-  const [playing, setPlaying] = useState(true);
+  const { video, allVideos = [] } = route.params;
+  const [playing,      setPlaying]      = useState(true);
   const [showComments, setShowComments] = useState(false);
-  const [reactions, setReactions] = useState({ likes: 0, dislikes: 0 });
+  const [reactions,    setReactions]    = useState({ likes: 0, dislikes: 0 });
   const [userReaction, setUserReaction] = useState(null);
+  const [reposted,     setReposted]     = useState(false);
   const playerRef = useRef(null);
 
   // Load reactions and pause video when screen loses focus
   useFocusEffect(
     useCallback(() => {
       getUserReaction(video.id).then(setUserReaction);
+      isReposted(video.id).then(setReposted);
       const unsub = subscribeToReactions(video.id, setReactions);
 
       return () => {
@@ -87,9 +90,23 @@ export default function VideoPlayerScreen({ route, navigation }) {
     }
   }
 
-  // Related videos — same category, excluding current
-  const related = musicVideos
-    .filter(v => v.id !== video.id && v.category === video.category)
+  async function handleRepost() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const nowReposted = await toggleRepost({
+      id:         video.id,
+      type:       'video',
+      title:      video.title,
+      subtitle:   `${video.artist} · ${video.views} views`,
+      imageUrl:   `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`,
+      accentColor: video.accentColor,
+      videoId:    video.videoId,
+    });
+    setReposted(nowReposted);
+  }
+
+  // Related videos — same category, excluding current (from the loaded list)
+  const related = allVideos
+    .filter(v => v.id !== video.id)
     .slice(0, 4);
 
   const totalReactions = reactions.likes + reactions.dislikes;
@@ -126,7 +143,7 @@ export default function VideoPlayerScreen({ route, navigation }) {
           }}
           activeOpacity={0.8}
         >
-          <Text style={styles.backArrow}>←</Text>
+          <Ionicons name="arrow-back" size={18} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -160,33 +177,38 @@ export default function VideoPlayerScreen({ route, navigation }) {
 
         {/* Action bar */}
         <View style={styles.actionBar}>
-          {/* Like */}
-          <TouchableOpacity
-            style={[styles.actionBtn, userReaction === 'like' && styles.actionBtnLiked]}
-            onPress={() => handleReaction('like')}
-            activeOpacity={0.75}
-          >
-            <Text style={[styles.actionIcon, userReaction === 'like' && { color: colors.accentTeal }]}>
-              {userReaction === 'like' ? '▲' : '△'}
-            </Text>
-            <Text style={[styles.actionCount, userReaction === 'like' && { color: colors.accentTeal }]}>
-              {reactions.likes > 0 ? reactions.likes.toLocaleString() : 'Like'}
-            </Text>
-          </TouchableOpacity>
-
-          {/* Dislike */}
-          <TouchableOpacity
-            style={[styles.actionBtn, userReaction === 'dislike' && styles.actionBtnDisliked]}
-            onPress={() => handleReaction('dislike')}
-            activeOpacity={0.75}
-          >
-            <Text style={[styles.actionIcon, userReaction === 'dislike' && { color: colors.neonPink }]}>
-              {userReaction === 'dislike' ? '▼' : '▽'}
-            </Text>
-            <Text style={[styles.actionCount, userReaction === 'dislike' && { color: colors.neonPink }]}>
-              {reactions.dislikes > 0 ? reactions.dislikes.toLocaleString() : 'Dislike'}
-            </Text>
-          </TouchableOpacity>
+          {/* Like / Dislike pill pair */}
+          <View style={styles.reactionGroup}>
+            <TouchableOpacity
+              style={styles.reactionBtn}
+              onPress={() => handleReaction('like')}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={userReaction === 'like' ? 'chevron-up' : 'chevron-up-outline'}
+                size={16}
+                color={userReaction === 'like' ? colors.accentTeal : colors.textMuted}
+              />
+              <Text style={[styles.reactionCount, userReaction === 'like' && { color: colors.accentTeal }]}>
+                {reactions.likes > 0 ? reactions.likes.toLocaleString() : 'UP'}
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.reactionDivider} />
+            <TouchableOpacity
+              style={styles.reactionBtn}
+              onPress={() => handleReaction('dislike')}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={userReaction === 'dislike' ? 'chevron-down' : 'chevron-down-outline'}
+                size={16}
+                color={userReaction === 'dislike' ? colors.neonPink : colors.textMuted}
+              />
+              <Text style={[styles.reactionCount, userReaction === 'dislike' && { color: colors.neonPink }]}>
+                {reactions.dislikes > 0 ? reactions.dislikes.toLocaleString() : 'DOWN'}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Like ratio bar */}
           {likePct !== null && (
@@ -205,8 +227,20 @@ export default function VideoPlayerScreen({ route, navigation }) {
             onPress={() => { Haptics.selectionAsync(); setShowComments(true); }}
             activeOpacity={0.75}
           >
-            <Text style={styles.actionIcon}>💬</Text>
-            <Text style={styles.actionCount}>Comments</Text>
+            <Ionicons name="chatbubble-outline" size={18} color={colors.textMuted} />
+            <Text style={styles.actionCount}>TALK</Text>
+          </TouchableOpacity>
+
+          {/* Repost */}
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={handleRepost}
+            activeOpacity={0.75}
+          >
+            <Ionicons name="repeat" size={18} color={reposted ? colors.green : colors.textMuted} />
+            <Text style={[styles.actionCount, reposted && { color: colors.green }]}>
+              {reposted ? 'POSTED' : 'REPOST'}
+            </Text>
           </TouchableOpacity>
 
           {/* Share */}
@@ -215,8 +249,8 @@ export default function VideoPlayerScreen({ route, navigation }) {
             onPress={handleShare}
             activeOpacity={0.75}
           >
-            <Text style={styles.actionIcon}>↑</Text>
-            <Text style={styles.actionCount}>Share</Text>
+            <Ionicons name="arrow-redo-outline" size={18} color={colors.textMuted} />
+            <Text style={styles.actionCount}>SHARE</Text>
           </TouchableOpacity>
         </View>
 
@@ -333,31 +367,42 @@ const styles = StyleSheet.create({
   actionBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    gap: 6,
+    borderBottomColor: '#1C1814',
+    gap: 4,
   },
+  reactionGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2D2520',
+    borderRadius: 22,
+    overflow: 'hidden',
+    marginRight: 4,
+  },
+  reactionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  reactionDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#2D2520',
+  },
+  reactionCount: { color: colors.textMuted, fontSize: 9, fontWeight: '700', letterSpacing: 0.3 },
   actionBtn: {
     alignItems: 'center',
     gap: 3,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: colors.border,
+    flex: 1,
   },
-  actionBtnLiked: {
-    borderColor: colors.accentTeal,
-    backgroundColor: 'rgba(224,123,10,0.08)',
-  },
-  actionBtnDisliked: {
-    borderColor: colors.neonPink,
-    backgroundColor: 'rgba(232,48,90,0.08)',
-  },
-  actionIcon: { color: colors.textMuted, fontSize: 14 },
-  actionCount: { color: colors.textMuted, fontSize: 9, fontWeight: '600', letterSpacing: 0.5 },
+  actionCount: { color: colors.textMuted, fontSize: 7, fontWeight: '800', letterSpacing: 1.5 },
 
   // Ratio
   ratioWrap: {

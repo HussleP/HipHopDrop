@@ -38,7 +38,7 @@ export default function ArticleDetailScreen({ route, navigation }) {
     try {
       await Share.share({
         title: article.title,
-        message: `${article.title}\n\nVia Hip-Hop Drop — ${article.source}`,
+        message: `${article.title}\n\nVia Hot Drop — ${article.source}`,
       });
     } catch (err) {
       console.warn('Share error:', err);

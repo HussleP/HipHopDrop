@@ -7,16 +7,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
 const LAST_UPDATED  = 'April 13, 2025';
-const CONTACT_EMAIL = 'support@hiphop-drop.app';
+const CONTACT_EMAIL = 'support@hot-drop.app';
 
 const SECTIONS = [
   {
     title: '1. Acceptance of Terms',
-    body: `By downloading, installing, or using Hip-Hop Drop, you agree to be bound by these Terms of Service. If you do not agree to these terms, do not use the app.`,
+    body: `By downloading, installing, or using Hot Drop, you agree to be bound by these Terms of Service. If you do not agree to these terms, do not use the app.`,
   },
   {
     title: '2. Use of the App',
-    body: `Hip-Hop Drop is a hip-hop news, culture, and music discovery app. You agree to use the app only for lawful purposes and in a way that does not infringe the rights of others.
+    body: `Hot Drop is a hip-hop news, culture, and music discovery app. You agree to use the app only for lawful purposes and in a way that does not infringe the rights of others.
 
 You must not:
 • Post false, misleading, or defamatory content
@@ -27,15 +27,15 @@ You must not:
   },
   {
     title: '3. User-Generated Content',
-    body: `When you submit tips, comments, or other content through Hip-Hop Drop, you grant us a non-exclusive, worldwide, royalty-free licence to use, display, and moderate that content within the app.
+    body: `When you submit tips, comments, or other content through Hot Drop, you grant us a non-exclusive, worldwide, royalty-free licence to use, display, and moderate that content within the app.
 
 You are solely responsible for the content you submit. We reserve the right to remove any content that violates these terms or that we deem inappropriate, without notice.`,
   },
   {
     title: '4. Intellectual Property',
-    body: `All content within Hip-Hop Drop — including design, code, graphics, and editorial content — is owned by Hip-Hop Drop or its licensors and is protected by copyright and other intellectual property laws.
+    body: `All content within Hot Drop — including design, code, graphics, and editorial content — is owned by Hot Drop or its licensors and is protected by copyright and other intellectual property laws.
 
-Music videos are sourced via the YouTube Data API and remain the property of their respective rights holders. Hip-Hop Drop claims no ownership over third-party music content.`,
+Music videos are sourced via the YouTube Data API and remain the property of their respective rights holders. Hot Drop claims no ownership over third-party music content.`,
   },
   {
     title: '5. Push Notifications',
@@ -43,13 +43,13 @@ Music videos are sourced via the YouTube Data API and remain the property of the
   },
   {
     title: '6. Disclaimers',
-    body: `Hip-Hop Drop is provided "as is" without warranties of any kind. We do not guarantee the accuracy, completeness, or timeliness of any content in the app. Music release dates, tour announcements, and other information may change without notice.
+    body: `Hot Drop is provided "as is" without warranties of any kind. We do not guarantee the accuracy, completeness, or timeliness of any content in the app. Music release dates, tour announcements, and other information may change without notice.
 
 Tips submitted by users are unverified until reviewed. We are not responsible for inaccurate user-submitted content.`,
   },
   {
     title: '7. Limitation of Liability',
-    body: `To the maximum extent permitted by law, Hip-Hop Drop and its operators shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the app.`,
+    body: `To the maximum extent permitted by law, Hot Drop and its operators shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the app.`,
   },
   {
     title: '8. Account Termination',
@@ -61,7 +61,7 @@ Tips submitted by users are unverified until reviewed. We are not responsible fo
   },
   {
     title: '10. Governing Law',
-    body: `These terms are governed by the laws of the jurisdiction in which Hip-Hop Drop operates. Any disputes shall be resolved in the appropriate courts of that jurisdiction.`,
+    body: `These terms are governed by the laws of the jurisdiction in which Hot Drop operates. Any disputes shall be resolved in the appropriate courts of that jurisdiction.`,
   },
   {
     title: '11. Contact',
@@ -89,7 +89,7 @@ export default function TermsScreen({ navigation }) {
       >
         <Text style={styles.updated}>Last updated: {LAST_UPDATED}</Text>
         <Text style={styles.intro}>
-          Please read these Terms of Service carefully before using Hip-Hop Drop.
+          Please read these Terms of Service carefully before using Hot Drop.
           These terms govern your access to and use of our app and services.
         </Text>
 

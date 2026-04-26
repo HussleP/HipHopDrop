@@ -27,7 +27,7 @@ const MENU_ITEMS = [
   { id: 'tip',           label: 'Submit a Tip',          sub: 'Send us a story or sighting', icon: 'mail-outline',                nav: 'SubmitTip'          },
   { id: 'followed',      label: 'Followed Artists',      sub: 'Artists you follow',          icon: 'star-outline',                nav: 'FollowedArtists'    },
   { id: 'notifications', label: 'Notification Settings', sub: 'Push, email preferences',     icon: 'settings-outline',            nav: 'NotificationSettings' },
-  { id: 'about',         label: 'About Hip-Hop Drop',    sub: 'Version 1.1.0 · Legal',       icon: 'information-circle-outline',  nav: 'About'              },
+  { id: 'about',         label: 'About Hot Drop',    sub: 'Version 1.1.0 · Legal',       icon: 'information-circle-outline',  nav: 'About'              },
 ];
 
 // ── Editable field card ───────────────────────────────────────────────────────

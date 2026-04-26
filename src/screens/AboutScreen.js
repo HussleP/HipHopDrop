@@ -15,16 +15,16 @@ import { colors } from '../theme/colors';
 
 const VERSION      = '1.1.0';
 const BUILD        = '2';
-const SUPPORT_EMAIL = 'support@hiphop-drop.app';
-const PRIVACY_URL   = 'https://hiphop-drop.app/privacy';
-const TERMS_URL     = 'https://hiphop-drop.app/terms';
+const SUPPORT_EMAIL = 'support@hot-drop.app';
+const PRIVACY_URL   = 'https://hot-drop.app/privacy';
+const TERMS_URL     = 'https://hot-drop.app/terms';
 
 export default function AboutScreen({ navigation }) {
   const [deleting, setDeleting] = useState(false);
   const user = getCurrentUser();
 
   function handleEmail() {
-    Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Hip-Hop Drop Support`);
+    Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Hot Drop Support`);
   }
 
   function confirmDeleteAccount() {

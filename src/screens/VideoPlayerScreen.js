@@ -83,7 +83,7 @@ export default function VideoPlayerScreen({ route, navigation }) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await Share.share({
-        message: `🎬 ${video.title} — ${video.artist}\n\nWatch on YouTube: https://youtu.be/${video.videoId}\n\nVia Hip-Hop Drop`,
+        message: `🎬 ${video.title} — ${video.artist}\n\nWatch on YouTube: https://youtu.be/${video.videoId}\n\nVia Hot Drop`,
       });
     } catch (err) {
       console.warn('Share error:', err);

@@ -117,7 +117,7 @@ export default function PollCard({ poll }) {
 
     const total = Object.values(localVotes).reduce((a, b) => a + b, 0);
 
-    let message = `🎤 Hip-Hop Drop Poll\n\n"${poll.question}"\n${poll.subtitle}\n\n`;
+    let message = `🎤 Hot Drop Poll\n\n"${poll.question}"\n${poll.subtitle}\n\n`;
 
     if (voted && total > 0) {
       options.forEach((opt, i) => {
@@ -131,7 +131,7 @@ export default function PollCard({ poll }) {
       options.forEach(opt => {
         message += `• ${opt.label}\n`;
       });
-      message += '\nCast your vote on Hip-Hop Drop 🔥';
+      message += '\nCast your vote on Hot Drop 🔥';
     }
 
     try {

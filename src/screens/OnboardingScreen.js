@@ -121,13 +121,13 @@ function WelcomeStep({ onNext }) {
   return (
     <View style={styles.stepWrap}>
       <View style={styles.logoWrap}>
-        <Text style={styles.logoMain}>HIP-HOP</Text>
+        <Text style={styles.logoMain}>HOT</Text>
         <Text style={styles.logoDrop}>DROP</Text>
         <View style={styles.logoLine} />
       </View>
 
       <Text style={styles.welcomeTagline}>
-        THE PULSE OF HIP-HOP.{'\n'}DROPS, BEEF, CULTURE.
+        THE PULSE OF THE CULTURE.{'\n'}DROPS, COLLABS, EXCLUSIVES.
       </Text>
       <Text style={styles.welcomeSub}>
         Set up your feed in 2 quick steps and never miss a moment.
@@ -258,7 +258,7 @@ function FinishStep({ onFinish }) {
       <Ionicons name="mic-outline" size={56} color={colors.accentTeal} style={{ marginBottom: 20 }} />
       <Text style={styles.finishTitle}>YOU'RE IN.</Text>
       <Text style={styles.finishSub}>
-        Your personalized hip-hop feed is ready.{'\n'}Stay first. Stay informed.
+        Your personalized drop feed is ready.{'\n'}Stay first. Stay informed.
       </Text>
 
       <View style={styles.finishCard}>

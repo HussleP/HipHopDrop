@@ -7,12 +7,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
 const LAST_UPDATED = 'April 13, 2025';
-const CONTACT_EMAIL = 'support@hiphop-drop.app';
+const CONTACT_EMAIL = 'support@hot-drop.app';
 
 const SECTIONS = [
   {
     title: '1. Information We Collect',
-    body: `We collect the following information when you use Hip-Hop Drop:
+    body: `We collect the following information when you use Hot Drop:
 
 • Email address and display name (when you create an account)
 • Device push notification token (to send you drop alerts)
@@ -22,7 +22,7 @@ const SECTIONS = [
   },
   {
     title: '2. How We Use Your Information',
-    body: `We use your information solely to operate and improve Hip-Hop Drop:
+    body: `We use your information solely to operate and improve Hot Drop:
 
 • To deliver personalised drop alerts and push notifications
 • To display your comments and reactions in the app
@@ -32,7 +32,7 @@ const SECTIONS = [
   },
   {
     title: '3. Third-Party Services',
-    body: `Hip-Hop Drop uses the following third-party services:
+    body: `Hot Drop uses the following third-party services:
 
 • Firebase (Google) — authentication, database, and push notifications. Google's privacy policy applies to data processed by Firebase.
 • YouTube Data API — for fetching music video content. Google's privacy policy applies.
@@ -57,7 +57,7 @@ To request a copy of your data or raise a privacy concern, contact us at ${CONTA
   },
   {
     title: '6. Children\'s Privacy',
-    body: `Hip-Hop Drop is not directed at children under 13. We do not knowingly collect personal information from children under 13. If you believe a child under 13 has provided us with personal information, please contact us at ${CONTACT_EMAIL} and we will delete it promptly.`,
+    body: `Hot Drop is not directed at children under 13. We do not knowingly collect personal information from children under 13. If you believe a child under 13 has provided us with personal information, please contact us at ${CONTACT_EMAIL} and we will delete it promptly.`,
   },
   {
     title: '7. Changes to This Policy',
@@ -89,7 +89,7 @@ export default function PrivacyPolicyScreen({ navigation }) {
       >
         <Text style={styles.updated}>Last updated: {LAST_UPDATED}</Text>
         <Text style={styles.intro}>
-          Hip-Hop Drop ("we", "our", "us") is committed to protecting your privacy.
+          Hot Drop ("we", "our", "us") is committed to protecting your privacy.
           This policy explains what data we collect, how we use it, and your rights
           regarding your personal information.
         </Text>

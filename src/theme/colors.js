@@ -1,5 +1,5 @@
 /**
- * Hip-Hop Drop — Blade Runner 2049 color system
+ * Hot Drop — Blade Runner 2049 color system
  *
  * Warm near-black backgrounds, amber primary accent (Joi's glow / desert dust),
  * electric cyan secondary (holographic displays), warm off-white text.

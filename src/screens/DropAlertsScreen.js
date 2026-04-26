@@ -174,7 +174,7 @@ export default function DropAlertsScreen({ navigation }) {
         <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Preview</Text>
         <View style={styles.previewCard}>
           <View style={styles.previewHeader}>
-            <Text style={styles.previewApp}>Hip-Hop Drop</Text>
+            <Text style={styles.previewApp}>Hot Drop</Text>
             <Text style={styles.previewTime}>now</Text>
           </View>
           <Text style={styles.previewTitle}>Travis Scott — Utopia Flame Tee is live</Text>

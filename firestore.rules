@@ -2,47 +2,69 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users can read/write their own document
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.token.email == 'zachary.damien@gmail.com';
+    }
+
+    // ── Users ─────────────────────────────────────────────────────────────────
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Polls — anyone authenticated can read; only server (admin SDK) writes
+    // ── Drops ─────────────────────────────────────────────────────────────────
+    // Public read (unauthenticated users can browse drops)
+    // Write restricted to admin only (app admin panel + seed script use client SDK)
+    match /drops/{dropId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Affiliate clicks ──────────────────────────────────────────────────────
+    // Anyone can log a click (no auth required — captures anonymous users too)
+    // Only admin can read the stats dashboard
+    match /affiliate_clicks/{clickId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ── Tips ──────────────────────────────────────────────────────────────────
+    // Signed-in users can submit; only admin reads/manages
+    match /tips/{tipId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ── Polls ─────────────────────────────────────────────────────────────────
     match /polls/{pollId} {
       allow read: if request.auth != null;
       allow write: if false; // Cloud Functions only
     }
 
-    // Drops — authenticated read; server write only
-    match /drops/{dropId} {
-      allow read: if request.auth != null;
-      allow write: if false;
-    }
-
-    // Articles — authenticated read; server write only
+    // ── Articles ──────────────────────────────────────────────────────────────
     match /articles/{articleId} {
       allow read: if request.auth != null;
       allow write: if false;
     }
 
-    // Interactions (likes, dislikes, comments) — authenticated users can read/write
+    // ── Interactions (likes, comments) ────────────────────────────────────────
     match /interactions/{contentId} {
-      allow read: if request.auth != null;
+      allow read:  if request.auth != null;
       allow write: if request.auth != null;
 
       match /comments/{commentId} {
         allow read: if request.auth != null;
-        // Anyone signed in can post; only the author can delete their own comment
         allow create: if request.auth != null
           && request.resource.data.text.size() > 0
           && request.resource.data.text.size() <= 280;
-        allow update: if request.auth != null; // for comment likes
+        allow update: if request.auth != null;
         allow delete: if request.auth != null
           && resource.data.uid == request.auth.uid;
       }
     }
 
-    // Notification log — server write only, no client access
+    // ── Notification log ──────────────────────────────────────────────────────
     match /notification_log/{logId} {
       allow read, write: if false;
     }

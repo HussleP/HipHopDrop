@@ -133,6 +133,8 @@ export default function ProfileScreen({ navigation }) {
   const user = getCurrentUser();
   const [savedCount,   setSavedCount]   = useState(0);
   const [userLabel,    setUserLabel]    = useState(null);
+  const aboutTapCount = useRef(0);
+  const aboutTapTimer = useRef(null);
   const [lyric,        setLyric]        = useState('');
   const [bio,          setBio]          = useState('');
   const [reposts,      setReposts]      = useState([]);
@@ -364,7 +366,23 @@ export default function ProfileScreen({ navigation }) {
               <TouchableOpacity
                 key={item.id}
                 style={[styles.menuRow, index < MENU_ITEMS.length - 1 && styles.menuRowBorder]}
-                onPress={() => item.nav && navigation.navigate(item.nav)}
+                onPress={() => {
+                  if (item.id === 'about') {
+                    // Secret: tap "About" 5× rapidly to open Affiliate Stats
+                    aboutTapCount.current += 1;
+                    clearTimeout(aboutTapTimer.current);
+                    if (aboutTapCount.current >= 5) {
+                      aboutTapCount.current = 0;
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      navigation.navigate('AffiliateStats');
+                      return;
+                    }
+                    aboutTapTimer.current = setTimeout(() => {
+                      aboutTapCount.current = 0;
+                    }, 1500);
+                  }
+                  if (item.nav) navigation.navigate(item.nav);
+                }}
                 activeOpacity={0.7}
               >
                 <View style={styles.menuIconBox}>

@@ -23,6 +23,7 @@ import FollowedArtistsScreen   from '../screens/FollowedArtistsScreen';
 import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
 import ArticleDetailScreen     from '../screens/ArticleDetailScreen';
 import ArticleWebViewScreen    from '../screens/ArticleWebViewScreen';
+import AffiliateStatsScreen    from '../screens/AffiliateStatsScreen';
 import { colors }              from '../theme/colors';
 import { LABELS }              from '../data/labels';
 import { LABEL_STORAGE_KEY }   from '../screens/LabelSelectScreen';
@@ -82,6 +83,7 @@ function ProfileStack() {
       <Stack.Screen name="FollowedArtists"      component={FollowedArtistsScreen}     />
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen}/>
       <Stack.Screen name="ArticleWebView"       component={ArticleWebViewScreen}      />
+      <Stack.Screen name="AffiliateStats"       component={AffiliateStatsScreen}      options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

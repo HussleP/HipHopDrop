@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
 import { DROPS } from '../data/drops';
+import { buildAffiliateUrl, trackBuyClick } from '../services/affiliateService';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function pad(n) { return String(n).padStart(2, '0'); }
@@ -216,8 +217,11 @@ export default function HomeScreen({ navigation }) {
 
   function openDrop(drop) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    trackBuyClick(drop); // fire-and-forget analytics
     navigation.navigate('ArticleWebView', {
-      url: drop.buyUrl, title: drop.item, source: drop.artist,
+      url: buildAffiliateUrl(drop),
+      title: drop.item,
+      source: drop.artist,
     });
   }
 

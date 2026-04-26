@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
 import { DROPS, CATEGORY_FILTERS } from '../data/drops';
+import { buildAffiliateUrl, trackBuyClick } from '../services/affiliateService';
 
 const NOTIFY_KEY = 'drop_notifications';
 
@@ -175,8 +176,11 @@ export default function DropsScreen({ navigation }) {
 
   function openDrop(drop) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    trackBuyClick(drop); // fire-and-forget analytics
     navigation.navigate('ArticleWebView', {
-      url: drop.buyUrl, title: drop.item, source: drop.artist,
+      url: buildAffiliateUrl(drop),
+      title: drop.item,
+      source: drop.artist,
     });
   }
 

@@ -135,6 +135,8 @@ export default function ProfileScreen({ navigation }) {
   const [userLabel,    setUserLabel]    = useState(null);
   const aboutTapCount = useRef(0);
   const aboutTapTimer = useRef(null);
+  const adminTapCount = useRef(0);
+  const adminTapTimer = useRef(null);
   const [lyric,        setLyric]        = useState('');
   const [bio,          setBio]          = useState('');
   const [reposts,      setReposts]      = useState([]);
@@ -251,10 +253,25 @@ export default function ProfileScreen({ navigation }) {
               { value: '3',        label: 'Alerts'  },
             ].map((s, i, arr) => (
               <React.Fragment key={s.label}>
-                <View style={styles.stat}>
+                <TouchableOpacity
+                  style={styles.stat}
+                  activeOpacity={1}
+                  onPress={() => {
+                    if (s.label !== 'Alerts') return;
+                    adminTapCount.current += 1;
+                    clearTimeout(adminTapTimer.current);
+                    if (adminTapCount.current >= 5) {
+                      adminTapCount.current = 0;
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      navigation.navigate('AdminDrops');
+                      return;
+                    }
+                    adminTapTimer.current = setTimeout(() => { adminTapCount.current = 0; }, 1500);
+                  }}
+                >
                   <Text style={[styles.statValue, { color: accent }]}>{s.value}</Text>
                   <Text style={styles.statLabel}>{s.label}</Text>
-                </View>
+                </TouchableOpacity>
                 {i < arr.length - 1 && (
                   <View style={[styles.statDivider, { backgroundColor: userLabel ? userLabel.accentColor + '30' : colors.border }]} />
                 )}

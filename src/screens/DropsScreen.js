@@ -8,7 +8,8 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
-import { DROPS, CATEGORY_FILTERS } from '../data/drops';
+import { CATEGORY_FILTERS } from '../data/drops';
+import { useDrops } from '../services/dropsService';
 import { buildAffiliateUrl, trackBuyClick } from '../services/affiliateService';
 
 const NOTIFY_KEY = 'drop_notifications';
@@ -154,6 +155,7 @@ function EndedRow({ drop }) {
 
 // ── Main screen ───────────────────────────────────────────────────────────────
 export default function DropsScreen({ navigation }) {
+  const { drops }             = useDrops();
   const [activeFilter, setActiveFilter] = useState('all');
   const [notifications, setNotifications] = useState({});
   const [refreshing, setRefreshing] = useState(false);
@@ -191,11 +193,11 @@ export default function DropsScreen({ navigation }) {
 
   // Filter logic
   const now = Date.now();
-  const upcoming = DROPS.filter(d =>
+  const upcoming = drops.filter(d =>
     d.status !== 'ended' &&
     (activeFilter === 'all' || d.category === activeFilter)
   );
-  const ended = DROPS.filter(d =>
+  const ended = drops.filter(d =>
     d.status === 'ended' &&
     (activeFilter === 'all' || d.category === activeFilter)
   );

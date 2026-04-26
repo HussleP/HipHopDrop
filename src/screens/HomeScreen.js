@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
-import { DROPS } from '../data/drops';
+import { useDrops } from '../services/dropsService';
 import { buildAffiliateUrl, trackBuyClick } from '../services/affiliateService';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -201,6 +201,7 @@ function WeekRow({ drop, onPress }) {
 
 // ── Main screen ───────────────────────────────────────────────────────────────
 export default function HomeScreen({ navigation }) {
+  const { drops }             = useDrops();
   const [refreshing, setRefreshing] = useState(false);
   const [, setTick] = useState(0);
 
@@ -226,9 +227,9 @@ export default function HomeScreen({ navigation }) {
   }
 
   const now       = Date.now();
-  const liveNow   = DROPS.filter(d => d.status === 'live' && d.endTime > now);
-  const soonDrops = DROPS.filter(d => d.status === 'upcoming' && (d.dropTime - now) < 6 * 3600000 && d.dropTime > now);
-  const weekDrops = DROPS.filter(d => d.status === 'upcoming' && (d.dropTime - now) >= 6 * 3600000);
+  const liveNow   = drops.filter(d => d.status === 'live' && (!d.endTime || d.endTime > now));
+  const soonDrops = drops.filter(d => d.status === 'upcoming' && (d.dropTime - now) < 6 * 3600000 && d.dropTime > now);
+  const weekDrops = drops.filter(d => d.status === 'upcoming' && (d.dropTime - now) >= 6 * 3600000);
 
   const byDay = {};
   weekDrops.forEach(d => {

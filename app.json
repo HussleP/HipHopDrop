@@ -7,27 +7,22 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "hot-drop",
-
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0A0907"
     },
-
     "updates": {
       "fallbackToCacheTimeout": 0,
       "checkAutomatically": "ON_LOAD",
       "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
     },
-
     "runtimeVersion": {
       "policy": "appVersion"
     },
-
     "assetBundlePatterns": [
       "**/*"
     ],
-
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.hotdrop.app",
@@ -35,10 +30,12 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Used to capture photos for tips and sightings.",
         "NSPhotoLibraryUsageDescription": "Used to attach images to tip submissions.",
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
-
     "android": {
       "package": "com.hotdrop.app",
       "versionCode": 1,
@@ -57,21 +54,21 @@
               "pathPrefix": "/"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
-
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
     "extra": {
       "eas": {
         "projectId": "YOUR_EAS_PROJECT_ID"
       }
     },
-
     "plugins": [
       [
         "expo-notifications",
@@ -81,7 +78,8 @@
           "sounds": []
         }
       ],
-      "expo-image-picker"
+      "expo-image-picker",
+      "@react-native-community/datetimepicker"
     ]
   }
 }

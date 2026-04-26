@@ -31,7 +31,8 @@
     "react-native-youtube-iframe": "^2.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "firebase-admin": "^13.8.0"
   },
   "private": true
 }
